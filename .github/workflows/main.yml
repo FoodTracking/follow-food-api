@@ -71,4 +71,4 @@ jobs:
           namespace: ${{ vars.KUBE_NAMESPACE }}
 
       - name: Rollout restart deployment
-        run: kubectl rollout restart deployment ${{ vars.KUBE_DEPLOYMENT }}
+        run: kubectl rollout restart deployment ${{ vars.KUBE_DEPLOYMENT }} -n ${{ vars.KUBE_NAMESPACE }}
