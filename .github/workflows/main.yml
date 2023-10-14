@@ -56,7 +56,7 @@ jobs:
           file: Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags: ${{ vars.REGISTRY_URL }}/${{ vars.REGISTRY_PROJECT }}/${{ vars.REGISTRY_IMAGE }}'
+          tags: ${{ vars.REGISTRY_URL }}/${{ vars.REGISTRY_PROJECT }}/${{ vars.REGISTRY_IMAGE }}
 
 
   deploy:
