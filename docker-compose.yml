@@ -1,0 +1,31 @@
+# Docker compose for the application
+version: '3.8'
+services:
+
+  # Postgres
+  postgres:
+    image: bitnami/postgresql:latest
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "follow-food"
+      POSTGRES_USER: "follow-food"
+      POSTGRES_DB: "follow-food"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis
+  redis:
+    image: bitnami/redis:latest
+    restart: always
+    environment:
+      REDIS_PASSWORD: "follow-food"
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data: {}
+  redis_data: {}
