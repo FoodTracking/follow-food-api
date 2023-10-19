@@ -11,9 +11,9 @@ async function bootstrap() {
 
   // Swagger
   const builder = new DocumentBuilder()
-    .setTitle('Feam API')
+    .setTitle('Follow-Food API')
     .addBearerAuth()
-    .setDescription('The official API for Feam')
+    .setDescription('The official API for Follow-Food')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, builder);

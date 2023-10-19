@@ -8,6 +8,10 @@ import { redisStore } from 'cache-manager-ioredis-yet';
 import { CacheModule } from '@nestjs/cache-manager';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerMiddleware } from './logger.middleware';
+import { RestaurantsModule } from './restaurants/restaurants.module';
+import { CategoriesModule } from './categories/categories.module';
+import { HttpModule } from '@nestjs/axios';
+import { GeolocationModule } from './geolocation/geolocation.module';
 
 @Module({
   imports: [
@@ -43,6 +47,10 @@ import { LoggerMiddleware } from './logger.middleware';
     }),
     AuthModule,
     UsersModule,
+    HttpModule,
+    RestaurantsModule,
+    GeolocationModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
