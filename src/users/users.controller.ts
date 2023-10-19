@@ -12,7 +12,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto, createUserSchema } from './dto/create-user.dto';
 import { UpdateUserDto, updateUserSchema } from './dto/update-user.dto';
-import { ZodValidationPipe } from '../pipes/zod.pipe';
+import { ZodValidationPipe } from '../common/pipes/zod.pipe';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
 import { User } from './entities/user.entity';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';

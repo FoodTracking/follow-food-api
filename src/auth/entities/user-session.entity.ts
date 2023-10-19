@@ -1,20 +1,9 @@
 import { User } from 'src/users/entities/user.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import { FFBaseEntity } from '../../common/entities/base.entity';
 
-@Entity({ name: 'user-token' })
-export class UserToken {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+@Entity({ name: 'user-session' })
+export class UserSessionEntity extends FFBaseEntity {
   @Column({ name: 'user_id' })
   userId: string;
 
@@ -42,23 +31,17 @@ export class UserToken {
   @Column({ name: 'next_id', nullable: true })
   nextId?: string;
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
-
   // --  Relations
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @OneToOne(() => UserToken)
-  @JoinColumn({ name: 'initial_id' })
-  rootToken: UserToken;
+  @OneToOne(() => UserSessionEntity)
+  @JoinColumn({ name: 'root_id' })
+  rootSession: UserSessionEntity;
 
-  @OneToOne(() => UserToken)
+  @OneToOne(() => UserSessionEntity)
   @JoinColumn({ name: 'next_id' })
-  nextToken: UserToken;
+  nextSession: UserSessionEntity;
 }

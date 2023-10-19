@@ -6,13 +6,13 @@ import { LocalStrategy } from './strategy/local.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserToken } from './entities/user-token.entity';
 import { RefreshStrategy } from './strategy/refresh.strategy';
+import { UserSessionEntity } from './entities/user-session.entity';
 
 @Module({
   imports: [
     JwtModule.register({}),
-    TypeOrmModule.forFeature([UserToken]),
+    TypeOrmModule.forFeature([UserSessionEntity]),
     UsersModule,
   ],
   controllers: [AuthController],

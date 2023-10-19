@@ -14,10 +14,12 @@ import { User } from '../users/entities/user.entity';
 import { CurrentUser } from './decorator/current-user.decorator';
 import { RealIP } from './decorator/real-ip.decorator';
 import { CreateUserDto, createUserSchema } from '../users/dto/create-user.dto';
-import { ZodValidationPipe } from '../pipes/zod.pipe';
+import { ZodValidationPipe } from '../common/pipes/zod.pipe';
 import { RefreshAuthGuard } from './guard/refresh-auth.guard';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
+import {ApiTags} from "@nestjs/swagger";
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

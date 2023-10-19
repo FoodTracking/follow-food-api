@@ -3,8 +3,7 @@ import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserToken } from './entities/user-token.entity';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, Repository } from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { User } from '../users/entities/user.entity';
@@ -13,12 +12,14 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { v4 as uuid } from 'uuid';
 import { jwtUnvalidatedKey } from '../utils/cache-keys';
 import { hashedHex } from '../utils/hash';
+import { UserSessionEntity } from './entities/user-session.entity';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(UserToken)
-    private readonly utRepository: Repository<UserToken>,
+    @InjectRepository(UserSessionEntity)
+    private readonly utRepository: Repository<UserSessionEntity>,
     @Inject(CACHE_MANAGER)
     private readonly cacheService: Cache,
     private readonly configService: ConfigService,
@@ -31,6 +32,8 @@ export class AuthService {
       select: ['id', 'email', 'password'],
       where: { email },
     });
+
+    if (!user) return null;
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) return user;
@@ -46,11 +49,15 @@ export class AuthService {
   }
 
   async validateRefreshToken(userId: string, refreshToken: string) {
+    const jwtTTL = this.configService.get<number>('JWT_REFRESH_TTL');
     const hashedToken = hashedHex(refreshToken);
     const token = await this.utRepository.findOneBy({
       userId,
       refreshToken: hashedToken,
       invalidated: false,
+      createdAt: LessThanOrEqual(
+        dayjs().subtract(jwtTTL, 'millisecond').toDate(),
+      ),
     });
 
     return token ?? null;
