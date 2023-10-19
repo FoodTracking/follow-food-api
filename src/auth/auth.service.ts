@@ -29,7 +29,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     const user = await this.userService.findOne({
-      select: ['id', 'email', 'password'],
+      select: ['id', 'email', 'password', 'role'],
       where: { email },
     });
 
@@ -69,6 +69,7 @@ export class AuthService {
         {
           sub: user.id,
           email: user.email,
+          role: user.role,
         },
         {
           secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
