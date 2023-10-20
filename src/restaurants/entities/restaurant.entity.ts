@@ -12,9 +12,10 @@ import {
 } from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
 import { User } from '../../users/entities/user.entity';
+import { FFBaseEntity } from '../../common/entities/base.entity';
 
 @Entity()
-export class Restaurant {
+export class Restaurant extends FFBaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -45,7 +46,7 @@ export class Restaurant {
   deletedAt: Date;
 
   // Relations
-  @Column({ name: 'owner_id' })
+  @Column({ name: 'owner_id', unique: true })
   ownerId: string;
 
   @OneToOne(() => User, (user) => user.id)

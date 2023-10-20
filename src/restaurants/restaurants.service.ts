@@ -1,11 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from './entities/restaurant.entity';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { RestaurantsFindAllQueryDto } from './dto/find-all-query.dto';
+import { User } from '../users/entities/user.entity';
+import { Role } from '../auth/enum/user-role.dto';
 
 @Injectable()
 export class RestaurantsService {
@@ -14,8 +20,11 @@ export class RestaurantsService {
     private restaurantsRepository: Repository<Restaurant>,
   ) {}
 
-  create(createRestaurantDto: CreateRestaurantDto) {
-    const entity = this.restaurantsRepository.create(createRestaurantDto);
+  create(createRestaurantDto: CreateRestaurantDto, user: User) {
+    const entity = this.restaurantsRepository.create({
+      ...createRestaurantDto,
+      ownerId: user.id,
+    });
     return this.restaurantsRepository.save(entity);
   }
 
@@ -53,17 +62,35 @@ export class RestaurantsService {
     return builder.getMany();
   }
 
-  findOne(id: string) {
-    return this.restaurantsRepository.findOneBy({ id });
+  findOne(options: FindOneOptions<Restaurant>) {
+    return this.restaurantsRepository.findOne(options);
   }
 
-  update(id: string, updateRestaurantDto: UpdateRestaurantDto) {
+  async update(
+    id: string,
+    updateRestaurantDto: UpdateRestaurantDto,
+    user: User,
+  ) {
     if (id !== updateRestaurantDto.id) throw new BadRequestException();
     const entity = this.restaurantsRepository.create(updateRestaurantDto);
-    return this.restaurantsRepository.save(entity);
+    await this.restaurantsRepository.update(
+      {
+        id,
+        ...(user.role !== Role.ADMIN ? { ownerId: user.id } : undefined),
+      },
+      entity,
+    );
+
+    return this.findById(id);
   }
 
   remove(id: string) {
     return this.restaurantsRepository.softDelete(id);
+  }
+
+  findById(id: string) {
+    const entity = this.restaurantsRepository.findOne({ where: { id } });
+    if (!entity) throw new NotFoundException();
+    return entity;
   }
 }

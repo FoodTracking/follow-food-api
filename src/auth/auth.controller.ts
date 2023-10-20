@@ -17,7 +17,7 @@ import { CreateUserDto, createUserSchema } from '../users/dto/create-user.dto';
 import { ZodValidationPipe } from '../common/pipes/zod.pipe';
 import { RefreshAuthGuard } from './guard/refresh-auth.guard';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
-import {ApiTags} from "@nestjs/swagger";
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('auth')
 @Controller('auth')
