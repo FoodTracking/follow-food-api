@@ -8,28 +8,17 @@ import {
   Post,
   Query,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
 import { RestaurantsService } from './restaurants.service';
-import {
-  CreateRestaurantDto,
-  createRestaurantSchema,
-} from './dto/create-restaurant.dto';
-import {
-  UpdateRestaurantDto,
-  updateRestaurantSchema,
-} from './dto/update-restaurant.dto';
-import {
-  restaurantsFindAllQueryDto,
-  RestaurantsFindAllQueryDto,
-} from './dto/find-all-query.dto';
-import { ZodValidationPipe } from '../common/pipes/zod.pipe';
+import { CreateRestaurantDto } from './dto/create-restaurant.dto';
+import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
+import { RestaurantsFindAllQueryDto } from './dto/find-all-query.dto';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { Role } from '../auth/enum/user-role.dto';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
-import { User } from '../users/entities/user.entity';
+import { Identity } from '../identity/entities/identity.entity';
 
 @Controller('restaurants')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -37,18 +26,18 @@ export class RestaurantsController {
   constructor(private readonly restaurantsService: RestaurantsService) {}
 
   @Post()
-  @Roles(Role.RESTAURANT_OWNER)
+  @Roles(Role.RESTAURANT)
   create(
-    @Body(new ZodValidationPipe(createRestaurantSchema))
+    @Body()
     createRestaurantDto: CreateRestaurantDto,
-    @CurrentUser() user: User,
+    @CurrentUser() user: Identity,
   ) {
     return this.restaurantsService.create(createRestaurantDto, user);
   }
 
   @Get()
   findAll(
-    @Query(new ZodValidationPipe(restaurantsFindAllQueryDto))
+    @Query()
     query: RestaurantsFindAllQueryDto,
   ) {
     return this.restaurantsService.findAllFiltered(query);
@@ -60,18 +49,30 @@ export class RestaurantsController {
   }
 
   @Patch(':id')
-  @Roles(Role.ADMIN, Role.RESTAURANT_OWNER)
+  @Roles(Role.ADMIN, Role.RESTAURANT)
   update(
     @Param('id') id: string,
-    @Body(new ZodValidationPipe(updateRestaurantSchema))
+    @Body()
     updateRestaurantDto: UpdateRestaurantDto,
-    @CurrentUser() user: User,
+    @CurrentUser() user: Identity,
   ) {
     return this.restaurantsService.update(id, updateRestaurantDto, user);
   }
 
+  @Patch(':id/approve')
+  @Roles(Role.ADMIN)
+  approve(@Param('id') id: string) {
+    return this.restaurantsService.process(id, true);
+  }
+
+  @Patch(':id/reject')
+  @Roles(Role.ADMIN)
+  reject(@Param('id') id: string) {
+    return this.restaurantsService.process(id, false);
+  }
+
   @Delete(':id')
-  @Roles(Role.ADMIN, Role.RESTAURANT_OWNER)
+  @Roles(Role.ADMIN, Role.RESTAURANT)
   remove(@Param('id') id: string) {
     return this.restaurantsService.remove(id);
   }

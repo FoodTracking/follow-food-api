@@ -2,27 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { Client } from './entities/user.entity';
 import { FindOneOptions, Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    @InjectRepository(Client)
+    private readonly userRepository: Repository<Client>,
   ) {}
 
   create(createUserDto: CreateUserDto) {
-    const entity = this.userRepository.create({
-      ...createUserDto,
-      password: bcrypt.hashSync(createUserDto.password, 10),
-    });
+    const entity = this.userRepository.create(createUserDto);
     return this.userRepository.save(entity);
   }
 
-  findAll(options?: FindManyOptions<User>) {
+  findAll(options?: FindManyOptions<Client>) {
     return this.userRepository.find(options);
   }
 
@@ -30,7 +26,7 @@ export class UsersService {
     return this.userRepository.findOneBy({ id });
   }
 
-  findOne(options: FindOneOptions<User>) {
+  findOne(options: FindOneOptions<Client>) {
     return this.userRepository.findOne(options);
   }
 
@@ -39,6 +35,6 @@ export class UsersService {
   }
 
   remove(id: string) {
-    return this.userRepository.delete(id);
+    return this.userRepository.softDelete(id);
   }
 }

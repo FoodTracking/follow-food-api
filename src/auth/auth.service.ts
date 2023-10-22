@@ -6,29 +6,31 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, Repository } from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { User } from '../users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { v4 as uuid } from 'uuid';
 import { jwtUnvalidatedKey } from '../utils/cache-keys';
 import { hashedHex } from '../utils/hash';
-import { UserSessionEntity } from './entities/user-session.entity';
+import { IdentitySessionEntity } from './entities/identity-session.entity';
 import * as dayjs from 'dayjs';
+import { CreateIdentityDto } from '../identity/dto/create-identity.dto';
+import { IdentityService } from '../identity/identity.service';
+import { Identity } from '../identity/entities/identity.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(UserSessionEntity)
-    private readonly utRepository: Repository<UserSessionEntity>,
+    @InjectRepository(IdentitySessionEntity)
+    private readonly utRepository: Repository<IdentitySessionEntity>,
     @Inject(CACHE_MANAGER)
     private readonly cacheService: Cache,
     private readonly configService: ConfigService,
+    private readonly identityService: IdentityService,
     private readonly jwtService: JwtService,
     private readonly userService: UsersService,
   ) {}
 
   async validateUser(email: string, password: string) {
-    const user = await this.userService.findOne({
+    const user = await this.identityService.findOne({
       select: ['id', 'email', 'password', 'role'],
       where: { email },
     });
@@ -36,6 +38,8 @@ export class AuthService {
     if (!user) return null;
 
     const isMatch = await bcrypt.compare(password, user.password);
+    delete user.password;
+
     if (isMatch) return user;
     return null;
   }
@@ -52,7 +56,7 @@ export class AuthService {
     const jwtTTL = this.configService.get<number>('JWT_REFRESH_TTL');
     const hashedToken = hashedHex(refreshToken);
     const token = await this.utRepository.findOneBy({
-      userId,
+      identityId: userId,
       refreshToken: hashedToken,
       invalidated: false,
       createdAt: LessThanOrEqual(
@@ -63,7 +67,7 @@ export class AuthService {
     return token ?? null;
   }
 
-  async generateToken(user: Partial<User>) {
+  async generateToken(user: Partial<Identity>) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
@@ -92,16 +96,16 @@ export class AuthService {
   }
 
   async login(
-    user: User,
+    user: Identity,
     userAgent: string,
     ip: string,
     rootId?: string,
     uuid?: string,
   ) {
     const [accessToken, refreshToken] = await this.generateToken(user);
-    const userToken = {
+    const userToken: Partial<IdentitySessionEntity> = {
       id: uuid,
-      userId: user.id,
+      identityId: user.id,
       refreshToken: hashedHex(refreshToken),
       token: hashedHex(accessToken),
       rootId: rootId,
@@ -117,7 +121,7 @@ export class AuthService {
     };
   }
 
-  async refresh(user: User, userAgent: string, ip: string, token: string) {
+  async refresh(user: Identity, userAgent: string, ip: string, token: string) {
     const hashToken = hashedHex(token.split(' ')[1]);
     const current = await this.utRepository.findOneBy({
       refreshToken: hashToken,
@@ -134,8 +138,10 @@ export class AuthService {
     return tokens;
   }
 
-  register(user: CreateUserDto) {
-    return this.userService.create(user);
+  async register(user: CreateIdentityDto) {
+    const entity = await this.identityService.create(user);
+    delete entity.password;
+    return entity;
   }
 
   async logout(token: string) {

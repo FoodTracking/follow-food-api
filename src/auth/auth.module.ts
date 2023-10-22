@@ -7,13 +7,15 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshStrategy } from './strategy/refresh.strategy';
-import { UserSessionEntity } from './entities/user-session.entity';
+import { IdentitySessionEntity } from './entities/identity-session.entity';
+import { IdentityModule } from '../identity/identity.module';
 
 @Module({
   imports: [
     JwtModule.register({}),
-    TypeOrmModule.forFeature([UserSessionEntity]),
+    TypeOrmModule.forFeature([IdentitySessionEntity]),
     UsersModule,
+    IdentityModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy, RefreshStrategy],

@@ -7,16 +7,14 @@ import {
   Patch,
   Post,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, createUserSchema } from './dto/create-user.dto';
-import { UpdateUserDto, updateUserSchema } from './dto/update-user.dto';
-import { ZodValidationPipe } from '../common/pipes/zod.pipe';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
-import { User } from './entities/user.entity';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
+import { Identity } from '../identity/entities/identity.entity';
 
 @ApiTags('users')
 @Controller('users')
@@ -25,7 +23,6 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @UsePipes(new ZodValidationPipe(createUserSchema))
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
@@ -36,7 +33,7 @@ export class UsersController {
   }
 
   @Get('me')
-  findMe(@CurrentUser() user: User) {
+  findMe(@CurrentUser() user: Identity) {
     return this.usersService.findOneById(user.id);
   }
 
@@ -46,7 +43,6 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @UsePipes(new ZodValidationPipe(updateUserSchema))
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }

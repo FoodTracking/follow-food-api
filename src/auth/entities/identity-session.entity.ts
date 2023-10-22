@@ -1,11 +1,11 @@
-import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { FFBaseEntity } from '../../common/entities/base.entity';
+import {Identity} from "../../identity/entities/identity.entity";
 
-@Entity({ name: 'user-session' })
-export class UserSessionEntity extends FFBaseEntity {
-  @Column({ name: 'user_id' })
-  userId: string;
+@Entity({ name: 'identity-session' })
+export class IdentitySessionEntity extends FFBaseEntity {
+  @Column({ name: 'identity_id' })
+  identityId: string;
 
   @Column({ name: 'refresh_token', comment: 'hashed token' })
   refreshToken: string;
@@ -33,15 +33,15 @@ export class UserSessionEntity extends FFBaseEntity {
 
   // --  Relations
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  @ManyToOne(() => Identity)
+  @JoinColumn({ name: 'identity_id' })
+  identity: Identity;
 
-  @OneToOne(() => UserSessionEntity)
+  @OneToOne(() => IdentitySessionEntity)
   @JoinColumn({ name: 'root_id' })
-  rootSession: UserSessionEntity;
+  rootSession: IdentitySessionEntity;
 
-  @OneToOne(() => UserSessionEntity)
+  @OneToOne(() => IdentitySessionEntity)
   @JoinColumn({ name: 'next_id' })
-  nextSession: UserSessionEntity;
+  nextSession: IdentitySessionEntity;
 }

@@ -1,10 +1,9 @@
-import { createRestaurantSchema } from './create-restaurant.dto';
-import { z } from 'zod';
+import { PartialType } from '@nestjs/swagger';
+import { CreateRestaurantDto } from './create-restaurant.dto';
+import { IsNotEmpty, IsUUID } from 'class-validator';
 
-export const updateRestaurantSchema = createRestaurantSchema
-  .extend({
-    id: z.string().uuid(),
-  })
-  .required();
-
-export type UpdateRestaurantDto = z.infer<typeof updateRestaurantSchema>;
+export class UpdateRestaurantDto extends PartialType(CreateRestaurantDto) {
+  @IsUUID(4)
+  @IsNotEmpty()
+  id: string;
+}

@@ -10,8 +10,8 @@ import { Restaurant } from './entities/restaurant.entity';
 import { FindOneOptions, Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { RestaurantsFindAllQueryDto } from './dto/find-all-query.dto';
-import { User } from '../users/entities/user.entity';
 import { Role } from '../auth/enum/user-role.dto';
+import { Identity } from '../identity/entities/identity.entity';
 
 @Injectable()
 export class RestaurantsService {
@@ -20,10 +20,10 @@ export class RestaurantsService {
     private restaurantsRepository: Repository<Restaurant>,
   ) {}
 
-  create(createRestaurantDto: CreateRestaurantDto, user: User) {
+  create(createRestaurantDto: CreateRestaurantDto, user: Identity) {
     const entity = this.restaurantsRepository.create({
       ...createRestaurantDto,
-      ownerId: user.id,
+      id: user.id,
     });
     return this.restaurantsRepository.save(entity);
   }
@@ -69,7 +69,7 @@ export class RestaurantsService {
   async update(
     id: string,
     updateRestaurantDto: UpdateRestaurantDto,
-    user: User,
+    user: Identity,
   ) {
     if (id !== updateRestaurantDto.id) throw new BadRequestException();
     const entity = this.restaurantsRepository.create(updateRestaurantDto);
@@ -92,5 +92,9 @@ export class RestaurantsService {
     const entity = this.restaurantsRepository.findOne({ where: { id } });
     if (!entity) throw new NotFoundException();
     return entity;
+  }
+
+  process(id: string, approve: boolean) {
+    return this.restaurantsRepository.update({ id }, { approved: approve });
   }
 }

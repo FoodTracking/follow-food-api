@@ -1,22 +1,19 @@
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToOne,
   Point,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  PrimaryColumn,
 } from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
-import { User } from '../../users/entities/user.entity';
 import { FFBaseEntity } from '../../common/entities/base.entity';
+import { Identity } from '../../identity/entities/identity.entity';
 
 @Entity()
 export class Restaurant extends FFBaseEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn()
   id: string;
 
   @Column()
@@ -36,21 +33,12 @@ export class Restaurant extends FFBaseEntity {
   })
   location: Point;
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt: Date;
+  @Column({ default: false })
+  approved: boolean;
 
   // Relations
-  @Column({ name: 'owner_id', unique: true })
-  ownerId: string;
-
-  @OneToOne(() => User, (user) => user.id)
-  owner: User;
+  @OneToOne(() => Identity, (user) => user.id)
+  identityId: Identity;
 
   @Column({ name: 'category_id' })
   categoryId: string;
