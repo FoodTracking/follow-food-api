@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { FFBaseEntity } from '../../common/entities/base.entity';
-import {Identity} from "../../identity/entities/identity.entity";
+import { Identity } from '../../identity/entities/identity.entity';
 
 @Entity({ name: 'identity-session' })
 export class IdentitySessionEntity extends FFBaseEntity {

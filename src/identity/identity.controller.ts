@@ -1,8 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
 import { IdentityService } from './identity.service';
 import { UpdateIdentityDto } from './dto/update-identity.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('identity')
+@ApiTags('identity')
 export class IdentityController {
   constructor(private readonly identityService: IdentityService) {}
 

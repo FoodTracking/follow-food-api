@@ -13,15 +13,16 @@ import { RestaurantsService } from './restaurants.service';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 import { RestaurantsFindAllQueryDto } from './dto/find-all-query.dto';
-import { RolesGuard } from '../auth/guard/roles.guard';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { Role } from '../auth/enum/user-role.dto';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
 import { Identity } from '../identity/entities/identity.entity';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('restaurants')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@ApiTags('restaurants')
+@UseGuards(JwtAuthGuard)
 export class RestaurantsController {
   constructor(private readonly restaurantsService: RestaurantsService) {}
 

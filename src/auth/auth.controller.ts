@@ -11,20 +11,21 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { CurrentUser } from './decorator/current-user.decorator';
 import { RealIP } from './decorator/real-ip.decorator';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { RefreshAuthGuard } from './guard/refresh-auth.guard';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
-import { ApiTags } from '@nestjs/swagger';
-import {Identity} from "../identity/entities/identity.entity";
-import {CreateIdentityDto} from "../identity/dto/create-identity.dto";
+import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { Identity } from '../identity/entities/identity.entity';
+import { CreateIdentityDto } from '../identity/dto/create-identity.dto';
+import { LoginDto } from './dto/login.dto';
 
-@ApiTags('auth')
 @Controller('auth')
+@ApiTags('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
+  @ApiBody({ type: LoginDto })
   async login(
     @CurrentUser() user: Identity,
     @RealIP() ip: string,

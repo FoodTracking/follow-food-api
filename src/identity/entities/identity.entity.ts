@@ -22,6 +22,6 @@ export class Identity extends FFBaseEntity {
   @OneToOne(() => Client, (client) => client.id, { cascade: true })
   client: Client;
 
-  @OneToOne(() => Restaurant, (restaurant) => restaurant.id, { cascade: true})
+  @OneToOne(() => Restaurant, (restaurant) => restaurant.id, { cascade: true })
   restaurant: Restaurant;
 }

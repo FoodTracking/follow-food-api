@@ -16,8 +16,8 @@ import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { Identity } from '../identity/entities/identity.entity';
 
-@ApiTags('users')
 @Controller('users')
+@ApiTags('users')
 @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

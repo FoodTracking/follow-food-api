@@ -15,8 +15,9 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { CategoriesModule } from './categories/categories.module';
 import { HttpModule } from '@nestjs/axios';
 import { GeolocationModule } from './geolocation/geolocation.module';
-import { APP_PIPE } from '@nestjs/core';
+import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { IdentityModule } from './identity/identity.module';
+import { RolesGuard } from './auth/guard/roles.guard';
 
 @Module({
   imports: [
@@ -59,6 +60,10 @@ import { IdentityModule } from './identity/identity.module';
   ],
   controllers: [],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
     {
       provide: APP_PIPE,
       useClass: ValidationPipe,
