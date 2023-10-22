@@ -1,13 +1,24 @@
-import { z } from 'zod';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNumber, IsString } from 'class-validator';
 
-export const restaurantsFindAllQueryDto = z.object({
-  name: z.string().optional(),
-  category: z.string().optional(),
-  lat: z.number().optional(),
-  long: z.number().optional(),
-  radius: z.number().optional(),
-});
+export class RestaurantsFindAllQueryDto {
+  @ApiPropertyOptional()
+  @IsString()
+  name?: string;
 
-export type RestaurantsFindAllQueryDto = z.infer<
-  typeof restaurantsFindAllQueryDto
->;
+  @ApiPropertyOptional()
+  @IsString()
+  category?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  lat?: number;
+
+  @ApiPropertyOptional()
+  @IsString()
+  long?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  radius?: number;
+}

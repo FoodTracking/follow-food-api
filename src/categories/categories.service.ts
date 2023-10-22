@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,7 +25,6 @@ export class CategoriesService {
   }
 
   update(id: string, updateCategoryDto: UpdateCategoryDto) {
-    if (id !== updateCategoryDto.id) throw new BadRequestException();
     const entity = this.categoriesRepository.create(updateCategoryDto);
     return this.categoriesRepository.save(entity);
   }

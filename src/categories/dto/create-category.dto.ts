@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export const createCategorySchema = z
-  .object({
-    name: z.string().min(1),
-  })
-  .required();
-
-export type CreateCategoryDto = z.infer<typeof createCategorySchema>;
+export class CreateCategoryDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+}
