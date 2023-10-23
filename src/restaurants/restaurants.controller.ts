@@ -22,12 +22,12 @@ import { ApiTags } from '@nestjs/swagger';
 
 @Controller('restaurants')
 @ApiTags('restaurants')
-@UseGuards(JwtAuthGuard)
 export class RestaurantsController {
   constructor(private readonly restaurantsService: RestaurantsService) {}
 
   @Post()
   @Roles(Role.RESTAURANT)
+  @UseGuards(JwtAuthGuard)
   create(
     @Body()
     createRestaurantDto: CreateRestaurantDto,
@@ -51,6 +51,7 @@ export class RestaurantsController {
 
   @Patch(':id')
   @Roles(Role.ADMIN, Role.RESTAURANT)
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('id') id: string,
     @Body()
@@ -62,18 +63,21 @@ export class RestaurantsController {
 
   @Patch(':id/approve')
   @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard)
   approve(@Param('id') id: string) {
     return this.restaurantsService.process(id, true);
   }
 
   @Patch(':id/reject')
   @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard)
   reject(@Param('id') id: string) {
     return this.restaurantsService.process(id, false);
   }
 
   @Delete(':id')
   @Roles(Role.ADMIN, Role.RESTAURANT)
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string) {
     return this.restaurantsService.remove(id);
   }

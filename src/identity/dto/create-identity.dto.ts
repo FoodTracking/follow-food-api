@@ -1,7 +1,7 @@
 import { Role } from '../../auth/enum/user-role.dto';
 import {
   IsEmail,
-  IsEnum,
+  IsIn,
   IsNotEmpty,
   IsStrongPassword,
   ValidateIf,
@@ -26,8 +26,8 @@ export class CreateIdentityDto {
   @IsNotEmpty()
   password: string;
 
-  @ApiProperty({ enum: Role })
-  @IsEnum(Role)
+  @ApiProperty()
+  @IsIn([Role.USER, Role.RESTAURANT])
   role: Role;
 
   @ApiProperty()

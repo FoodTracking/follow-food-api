@@ -33,7 +33,7 @@ import { RolesGuard } from './auth/guard/roles.guard';
         database: configService.get<string>('DB_NAME'),
         entities: [__dirname + '/**/*.entity.{ts,js}'],
         synchronize: true,
-        logging: true,
+        // logging: true,
       }),
       inject: [ConfigService],
     }),
@@ -70,8 +70,6 @@ import { RolesGuard } from './auth/guard/roles.guard';
       useFactory: () =>
         new ValidationPipe({
           transform: true,
-          forbidUnknownValues: true,
-          forbidNonWhitelisted: true,
         }),
     },
   ],

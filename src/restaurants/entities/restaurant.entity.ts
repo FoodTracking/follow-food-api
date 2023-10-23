@@ -38,7 +38,8 @@ export class Restaurant extends FFBaseEntity {
 
   // Relations
   @OneToOne(() => Identity, (user) => user.id)
-  identityId: Identity;
+  @JoinColumn({ name: 'id' })
+  identity: Identity;
 
   @Column({ name: 'category_id' })
   categoryId: string;

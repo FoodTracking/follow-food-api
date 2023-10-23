@@ -57,4 +57,16 @@ export class IdentityService {
   remove(id: string) {
     return `This action removes a #${id} identity`;
   }
+
+  async me(identity: Identity) {
+    const entity = await this.identityRepository.findOne({
+      relations: {
+        client: true,
+        restaurant: true,
+      },
+      where: { id: identity.id },
+    });
+
+    return entity;
+  }
 }

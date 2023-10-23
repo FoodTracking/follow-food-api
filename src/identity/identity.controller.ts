@@ -1,16 +1,38 @@
-import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
 import { IdentityService } from './identity.service';
 import { UpdateIdentityDto } from './dto/update-identity.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Identity } from './entities/identity.entity';
+import { CurrentUser } from '../auth/decorator/current-user.decorator';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { plainToInstance } from 'class-transformer';
+import { ProfileDto } from './dto/profile.dto';
 
 @Controller('identity')
 @ApiTags('identity')
+@UseGuards(JwtAuthGuard)
 export class IdentityController {
   constructor(private readonly identityService: IdentityService) {}
 
   @Get()
   findAll() {
     return this.identityService.findAll();
+  }
+
+  @Get('me')
+  async findMe(@CurrentUser() user: Identity) {
+    const entity = await this.identityService.me(user);
+    return plainToInstance(ProfileDto, entity, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get(':id')

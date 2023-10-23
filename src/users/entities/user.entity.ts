@@ -15,5 +15,5 @@ export class Client extends FFBaseEntity {
 
   @OneToOne(() => Identity, (user) => user.id)
   @JoinColumn({ name: 'id' })
-  user: Identity;
+  identity: Identity;
 }
