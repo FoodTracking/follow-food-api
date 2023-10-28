@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { FindOneOptions, Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -15,10 +14,7 @@ export class UsersService {
   ) {}
 
   create(createUserDto: CreateUserDto) {
-    const entity = this.userRepository.create({
-      ...createUserDto,
-      password: bcrypt.hashSync(createUserDto.password, 10),
-    });
+    const entity = this.userRepository.create(createUserDto);
     return this.userRepository.save(entity);
   }
 
@@ -39,6 +35,6 @@ export class UsersService {
   }
 
   remove(id: string) {
-    return this.userRepository.delete(id);
+    return this.userRepository.softDelete(id);
   }
 }

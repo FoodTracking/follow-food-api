@@ -6,28 +6,28 @@ import {
   Headers,
   Post,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guard/local-auth.guard';
-import { User } from '../users/entities/user.entity';
 import { CurrentUser } from './decorator/current-user.decorator';
 import { RealIP } from './decorator/real-ip.decorator';
-import { CreateUserDto, createUserSchema } from '../users/dto/create-user.dto';
-import { ZodValidationPipe } from '../common/pipes/zod.pipe';
 import { RefreshAuthGuard } from './guard/refresh-auth.guard';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
-import {ApiTags} from "@nestjs/swagger";
+import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { Identity } from '../identity/entities/identity.entity';
+import { CreateIdentityDto } from '../identity/dto/create-identity.dto';
+import { LoginDto } from './dto/login.dto';
 
-@ApiTags('auth')
 @Controller('auth')
+@ApiTags('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
+  @ApiBody({ type: LoginDto })
   async login(
-    @CurrentUser() user: User,
+    @CurrentUser() user: Identity,
     @RealIP() ip: string,
     @Headers('User-Agent') userAgent: string,
   ) {
@@ -35,15 +35,14 @@ export class AuthController {
   }
 
   @Post('register')
-  @UsePipes(new ZodValidationPipe(createUserSchema))
-  async register(@Body() user: CreateUserDto) {
-    return this.authService.register(user);
+  async register(@Body() identity: CreateIdentityDto) {
+    return this.authService.register(identity);
   }
 
   @Get('refresh')
   @UseGuards(RefreshAuthGuard)
   async refresh(
-    @CurrentUser() user: User,
+    @CurrentUser() user: Identity,
     @RealIP() ip: string,
     @Headers('User-Agent') userAgent: string,
     @Headers('Authorization') token: string,

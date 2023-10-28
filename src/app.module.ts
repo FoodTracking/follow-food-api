@@ -1,6 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -8,6 +11,13 @@ import { redisStore } from 'cache-manager-ioredis-yet';
 import { CacheModule } from '@nestjs/cache-manager';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerMiddleware } from './logger.middleware';
+import { RestaurantsModule } from './restaurants/restaurants.module';
+import { CategoriesModule } from './categories/categories.module';
+import { HttpModule } from '@nestjs/axios';
+import { GeolocationModule } from './geolocation/geolocation.module';
+import { APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { IdentityModule } from './identity/identity.module';
+import { RolesGuard } from './auth/guard/roles.guard';
 
 @Module({
   imports: [
@@ -23,6 +33,7 @@ import { LoggerMiddleware } from './logger.middleware';
         database: configService.get<string>('DB_NAME'),
         entities: [__dirname + '/**/*.entity.{ts,js}'],
         synchronize: true,
+        // logging: true,
       }),
       inject: [ConfigService],
     }),
@@ -31,10 +42,8 @@ import { LoggerMiddleware } from './logger.middleware';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         store: redisStore,
-        socket: {
-          host: configService.get<string>('CACHE_HOST'),
-          port: +configService.get<string>('CACHE_PORT'),
-        },
+        host: configService.get<string>('CACHE_HOST'),
+        port: +configService.get<string>('CACHE_PORT'),
         password: configService.get<string>('CACHE_PASSWORD'),
         db: +configService.get<string>('CACHE_DB'),
         ttl: +configService.get<string>('CACHE_TTL'),
@@ -43,9 +52,27 @@ import { LoggerMiddleware } from './logger.middleware';
     }),
     AuthModule,
     UsersModule,
+    HttpModule,
+    RestaurantsModule,
+    GeolocationModule,
+    CategoriesModule,
+    IdentityModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
+      useFactory: () =>
+        new ValidationPipe({
+          transform: true,
+        }),
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
