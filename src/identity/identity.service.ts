@@ -22,6 +22,7 @@ export class IdentityService {
       id: id,
       email: createUserDto.email.toLowerCase(),
       password: bcrypt.hashSync(createUserDto.password, 10),
+      role: createUserDto.role,
       ...(createUserDto.role === Role.USER && {
         user: {
           id: id,
