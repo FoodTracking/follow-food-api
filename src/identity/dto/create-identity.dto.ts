@@ -35,7 +35,7 @@ export class CreateIdentityDto {
   @ValidateNested()
   @Type(() => CreateUserDto)
   @IsNotEmpty()
-  client?: CreateUserDto;
+  user?: CreateUserDto;
 
   @ApiProperty()
   @ValidateIf((o) => o.role === Role.RESTAURANT)

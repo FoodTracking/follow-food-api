@@ -23,9 +23,9 @@ export class IdentityService {
       email: createUserDto.email.toLowerCase(),
       password: bcrypt.hashSync(createUserDto.password, 10),
       ...(createUserDto.role === Role.USER && {
-        client: {
+        user: {
           id: id,
-          ...createUserDto.client,
+          ...createUserDto.user,
         },
       }),
       ...(createUserDto.role === Role.RESTAURANT && {
@@ -35,6 +35,7 @@ export class IdentityService {
         },
       }),
     });
+
     return this.identityRepository.save(entity);
   }
 
