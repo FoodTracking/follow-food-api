@@ -18,9 +18,9 @@ import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { plainToInstance } from 'class-transformer';
 import { ProfileDto } from './dto/profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {Roles} from "../auth/decorator/roles.decorator";
-import {Role} from "../auth/enum/user-role.dto";
-import {RolesGuard} from "../auth/guard/roles.guard";
+import { Roles } from '../auth/decorator/roles.decorator';
+import { Role } from '../auth/enum/user-role.dto';
+import { RolesGuard } from '../auth/guard/roles.guard';
 
 @Controller('identity')
 @ApiTags('identity')

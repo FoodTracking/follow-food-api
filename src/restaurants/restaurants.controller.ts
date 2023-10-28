@@ -21,7 +21,7 @@ import { Identity } from '../identity/entities/identity.entity';
 import { ApiTags } from '@nestjs/swagger';
 import { ProductDto } from '../products/dto/product.dto';
 import { plainToInstance } from 'class-transformer';
-import {RolesGuard} from "../auth/guard/roles.guard";
+import { RolesGuard } from '../auth/guard/roles.guard';
 
 @Controller('restaurants')
 @ApiTags('restaurants')

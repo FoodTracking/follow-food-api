@@ -12,7 +12,7 @@ import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { Identity } from '../identity/entities/identity.entity';
 import { Role } from '../auth/enum/user-role.dto';
 import { ConfigService } from '@nestjs/config';
-import * as fs from "fs";
+import * as fs from 'fs';
 
 @Injectable()
 export class ProductsService {
