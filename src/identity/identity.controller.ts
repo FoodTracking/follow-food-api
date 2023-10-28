@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
-  UseGuards,
+  Patch, UploadedFile,
+  UseGuards, UseInterceptors,
 } from '@nestjs/common';
 import { IdentityService } from './identity.service';
 import { UpdateIdentityDto } from './dto/update-identity.dto';
@@ -15,6 +15,7 @@ import { CurrentUser } from '../auth/decorator/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { plainToInstance } from 'class-transformer';
 import { ProfileDto } from './dto/profile.dto';
+import {FileInterceptor} from "@nestjs/platform-express";
 
 @Controller('identity')
 @ApiTags('identity')
@@ -41,11 +42,13 @@ export class IdentityController {
   }
 
   @Patch(':id')
+  @UseInterceptors(FileInterceptor('avatar'))
   update(
     @Param('id') id: string,
     @Body() updateIdentityDto: UpdateIdentityDto,
+    @UploadedFile() avatar: Express.Multer.File,
   ) {
-    return this.identityService.update(id, updateIdentityDto);
+    return this.identityService.update(id, updateIdentityDto, avatar);
   }
 
   @Delete(':id')

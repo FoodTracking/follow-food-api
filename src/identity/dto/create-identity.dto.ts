@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { CreateUserDto } from '../../users/dto/create-user.dto';
 import { CreateRestaurantDto } from '../../restaurants/dto/create-restaurant.dto';
-import { Type } from 'class-transformer';
+import {Transform, Type} from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateIdentityDto {

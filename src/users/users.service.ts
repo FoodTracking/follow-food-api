@@ -2,15 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Client } from './entities/user.entity';
+import { User } from './entities/user.entity';
 import { FindOneOptions, Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(Client)
-    private readonly userRepository: Repository<Client>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   create(createUserDto: CreateUserDto) {
@@ -18,7 +18,7 @@ export class UsersService {
     return this.userRepository.save(entity);
   }
 
-  findAll(options?: FindManyOptions<Client>) {
+  findAll(options?: FindManyOptions<User>) {
     return this.userRepository.find(options);
   }
 
@@ -26,7 +26,7 @@ export class UsersService {
     return this.userRepository.findOneBy({ id });
   }
 
-  findOne(options: FindOneOptions<Client>) {
+  findOne(options: FindOneOptions<User>) {
     return this.userRepository.findOne(options);
   }
 

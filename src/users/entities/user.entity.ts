@@ -2,8 +2,8 @@ import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { FFBaseEntity } from '../../common/entities/base.entity';
 import { Identity } from '../../identity/entities/identity.entity';
 
-@Entity({ name: 'client' })
-export class Client extends FFBaseEntity {
+@Entity({ name: 'user' })
+export class User extends FFBaseEntity {
   @PrimaryColumn()
   id: string;
 

@@ -50,8 +50,16 @@ export class IdentityService {
     return this.identityRepository.findOne(options);
   }
 
-  update(id: string, updateIdentityDto: UpdateIdentityDto) {
-    return this.identityRepository.update(id, updateIdentityDto);
+  update(
+    id: string,
+    updateIdentityDto: UpdateIdentityDto,
+    avatar?: Express.Multer.File,
+  ) {
+    const entity = this.identityRepository.create({
+      ...updateIdentityDto,
+      avatar: avatar?.filename,
+    });
+    return this.identityRepository.update(id, entity);
   }
 
   remove(id: string) {
@@ -61,7 +69,7 @@ export class IdentityService {
   async me(identity: Identity) {
     const entity = await this.identityRepository.findOne({
       relations: {
-        client: true,
+        user: true,
         restaurant: true,
       },
       where: { id: identity.id },

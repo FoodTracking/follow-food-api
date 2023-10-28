@@ -18,6 +18,8 @@ import { GeolocationModule } from './geolocation/geolocation.module';
 import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { IdentityModule } from './identity/identity.module';
 import { RolesGuard } from './auth/guard/roles.guard';
+import { MulterModule } from '@nestjs/platform-express';
+import {MulterConfigService} from "./common/multer/multer-config.service";
 
 @Module({
   imports: [

@@ -1,6 +1,6 @@
 import { Expose, Transform } from 'class-transformer';
 import { Role } from '../../auth/enum/user-role.dto';
-import { ApiProperty } from '@nestjs/swagger';
+import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 
 export class ProfileDto {
   @ApiProperty()
@@ -15,6 +15,13 @@ export class ProfileDto {
   @Expose()
   role: Role;
 
+  @ApiPropertyOptional()
+  @Expose()
+  @Transform(({ value }) =>
+    value ? `${process.env.API_BASE_URL}/public/${value}` : undefined,
+  )
+  avatar: string;
+
   @ApiProperty()
   @Transform(({ obj }) =>
     obj.role === Role.USER
@@ -22,5 +29,5 @@ export class ProfileDto {
       : `${obj.restaurant.name}`,
   )
   @Expose()
-  fullname: string;
+  name: string;
 }
