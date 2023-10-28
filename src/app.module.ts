@@ -63,10 +63,6 @@ import { ProductsModule } from './products/products.module';
   controllers: [],
   providers: [
     {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
-    {
       provide: APP_PIPE,
       useClass: ValidationPipe,
       useFactory: () =>

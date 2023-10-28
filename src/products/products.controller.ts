@@ -21,13 +21,17 @@ import { Roles } from '../auth/decorator/roles.decorator';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
 import { Identity } from '../identity/entities/identity.entity';
+import { RolesGuard } from '../auth/guard/roles.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('products')
-@UseGuards(JwtAuthGuard)
+@ApiTags('products')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
+  @Roles(Role.ADMIN, Role.RESTAURANT)
   @UseInterceptors(FileInterceptor('image'))
   create(
     @CurrentUser() identity: Identity,
@@ -50,6 +54,7 @@ export class ProductsController {
   }
 
   @Patch(':id')
+  @Roles(Role.ADMIN, Role.RESTAURANT)
   @UseInterceptors(FileInterceptor('image'))
   update(
     @Param('id') id: string,
@@ -61,6 +66,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN, Role.RESTAURANT)
   remove(@Param('id') id: string) {
     return this.productsService.remove(id);
   }

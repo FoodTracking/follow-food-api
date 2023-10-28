@@ -31,6 +31,8 @@ export class RolesGuard implements CanActivate {
       (role) => request.user.role?.includes(role.toString()),
     );
 
+    console.log('hasPermission', hasPermission)
+
     if (!hasPermission) throw new UnauthorizedException();
     return true;
   }
