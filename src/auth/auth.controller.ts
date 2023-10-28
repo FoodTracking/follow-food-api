@@ -5,9 +5,7 @@ import {
   Get,
   Headers,
   Post,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guard/local-auth.guard';
@@ -19,7 +17,6 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Identity } from '../identity/entities/identity.entity';
 import { CreateIdentityDto } from '../identity/dto/create-identity.dto';
 import { LoginDto } from './dto/login.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('auth')
 @ApiTags('auth')

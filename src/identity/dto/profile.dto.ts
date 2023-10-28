@@ -1,6 +1,6 @@
 import { Expose, Transform } from 'class-transformer';
 import { Role } from '../../auth/enum/user-role.dto';
-import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ProfileDto {
   @ApiProperty()
