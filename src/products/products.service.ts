@@ -11,12 +11,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { Identity } from '../identity/entities/identity.entity';
 import { Role } from '../auth/enum/user-role.dto';
+import { ConfigService } from '@nestjs/config';
+import * as fs from "fs";
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly repository: Repository<Product>,
+    private readonly config: ConfigService,
   ) {}
 
   create(
@@ -60,12 +63,16 @@ export class ProductsService {
     updateProductDto: UpdateProductDto,
     image: Express.Multer.File,
   ) {
-    const entity = this.repository.create({
-      ...updateProductDto,
-      image: image.filename,
-    });
-    await this.repository.update(id, entity);
-    return this.findById(id);
+    const entity = await this.findById(id);
+    const created = this.repository.create(updateProductDto);
+
+    // Delete old avatar
+    if (image) {
+      fs.unlink(`${this.config.get('MULTER_DEST')}/${entity.image}`, () => {});
+      created.image = image.filename;
+    }
+
+    return await this.repository.save({ ...entity, ...created });
   }
 
   remove(id: string) {
