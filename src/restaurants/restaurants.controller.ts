@@ -19,6 +19,8 @@ import { Role } from '../auth/enum/user-role.dto';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
 import { Identity } from '../identity/entities/identity.entity';
 import { ApiTags } from '@nestjs/swagger';
+import { ProductDto } from '../products/dto/product.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('restaurants')
 @ApiTags('restaurants')
@@ -47,6 +49,12 @@ export class RestaurantsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.restaurantsService.findById(id);
+  }
+
+  @Get(':id/products')
+  async findRestaurantProducts(@Param('id') id: string) {
+    const entities = await this.restaurantsService.findProducts(id);
+    return entities.map((entity) => plainToInstance(ProductDto, entity));
   }
 
   @Patch(':id')

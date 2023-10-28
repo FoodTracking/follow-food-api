@@ -18,6 +18,7 @@ import { GeolocationModule } from './geolocation/geolocation.module';
 import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { IdentityModule } from './identity/identity.module';
 import { RolesGuard } from './auth/guard/roles.guard';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { RolesGuard } from './auth/guard/roles.guard';
     GeolocationModule,
     CategoriesModule,
     IdentityModule,
+    ProductsModule,
   ],
   controllers: [],
   providers: [
