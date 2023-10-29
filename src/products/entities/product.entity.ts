@@ -24,4 +24,6 @@ export class Product extends FFBaseEntity {
   @ManyToOne(() => Restaurant, (r) => r.products)
   @JoinColumn({ name: 'restaurant_id' })
   restaurant: Restaurant;
+
+
 }

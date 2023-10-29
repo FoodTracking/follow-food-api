@@ -12,6 +12,7 @@ import { Category } from '../../categories/entities/category.entity';
 import { FFBaseEntity } from '../../common/entities/base.entity';
 import { Identity } from '../../identity/entities/identity.entity';
 import { Product } from '../../products/entities/product.entity';
+import { Order } from '../../orders/entities/order.entity';
 
 @Entity()
 export class Restaurant extends FFBaseEntity {
@@ -52,4 +53,7 @@ export class Restaurant extends FFBaseEntity {
 
   @OneToMany(() => Category, (category) => category.restaurants)
   products: Product[];
+
+  @OneToMany(() => Order, (order) => order.restaurant)
+  orders: Order[];
 }

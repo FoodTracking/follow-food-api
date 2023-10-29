@@ -18,6 +18,7 @@ import { GeolocationModule } from './geolocation/geolocation.module';
 import { APP_PIPE } from '@nestjs/core';
 import { IdentityModule } from './identity/identity.module';
 import { ProductsModule } from './products/products.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -33,7 +34,7 @@ import { ProductsModule } from './products/products.module';
         database: configService.get<string>('DB_NAME'),
         entities: [__dirname + '/**/*.entity.{ts,js}'],
         synchronize: true,
-        // logging: true,
+        logging: true,
       }),
       inject: [ConfigService],
     }),
@@ -58,6 +59,7 @@ import { ProductsModule } from './products/products.module';
     CategoriesModule,
     IdentityModule,
     ProductsModule,
+    OrdersModule,
   ],
   controllers: [],
   providers: [
