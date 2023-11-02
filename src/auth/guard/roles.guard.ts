@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { Role } from '../enum/user-role.dto';
 import { ROLES_KEY } from '../decorator/roles.decorator';
 import { Identity } from '../../identity/entities/identity.entity';
+import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -23,17 +24,34 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    const request: Request & { user: Partial<Identity> } = context
-      .switchToHttp()
-      .getRequest();
+    const httpContext = context.switchToHttp().getRequest();
+    const wsContext = context.switchToWs().getClient();
+
+    let user: Partial<Identity>;
+
+    if (httpContext) {
+      user = httpContext.user;
+    } else if (wsContext) {
+      user = wsContext.handshake.user;
+    } else {
+      throw new UnauthorizedException();
+    }
 
     const hasPermission = requiredRoles.some(
-      (role) => request.user.role?.includes(role.toString()),
+      (role) => user.role?.includes(role.toString()),
     );
 
-    console.log('hasPermission', hasPermission);
+    if (!hasPermission) {
+      if (httpContext) {
+        throw new UnauthorizedException(
+          `your role is not allowed to access this resource (${requiredRoles})`,
+        );
+      }
+      if (wsContext) {
+        throw new WsException('UnauthorizedException');
+      }
+    }
 
-    if (!hasPermission) throw new UnauthorizedException();
     return true;
   }
 }

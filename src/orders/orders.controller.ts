@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
@@ -43,9 +42,9 @@ export class OrdersController {
     return this.ordersService.findById(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(id, updateOrderDto);
+  @Patch(':id/next')
+  update(@Param('id') id: string) {
+    return this.ordersService.next(id);
   }
 
   @Delete(':id')

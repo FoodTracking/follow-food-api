@@ -22,6 +22,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ProductDto } from '../products/dto/product.dto';
 import { plainToInstance } from 'class-transformer';
 import { RolesGuard } from '../auth/guard/roles.guard';
+import { Order } from '../orders/entities/order.entity';
 
 @Controller('restaurants')
 @ApiTags('restaurants')
@@ -56,6 +57,12 @@ export class RestaurantsController {
   async findRestaurantProducts(@Param('id') id: string) {
     const entities = await this.restaurantsService.findProducts(id);
     return entities.map((entity) => plainToInstance(ProductDto, entity));
+  }
+
+  @Get(':id/orders')
+  async findRestaurantOrders(@Param('id') id: string) {
+    const entities = await this.restaurantsService.findOrders(id);
+    return entities.map((entity) => plainToInstance(Order, entity));
   }
 
   @Patch(':id')

@@ -13,12 +13,14 @@ import { RestaurantsFindAllQueryDto } from './dto/find-all-query.dto';
 import { Role } from '../auth/enum/user-role.dto';
 import { Identity } from '../identity/entities/identity.entity';
 import { ProductsService } from '../products/products.service';
+import { OrdersService } from '../orders/orders.service';
 
 @Injectable()
 export class RestaurantsService {
   constructor(
     @InjectRepository(Restaurant)
     private restaurantsRepository: Repository<Restaurant>,
+    private orderService: OrdersService,
     private productsService: ProductsService,
   ) {}
 
@@ -70,6 +72,17 @@ export class RestaurantsService {
 
   findProducts(id: string) {
     return this.productsService.findAll({ where: { restaurantId: id } });
+  }
+
+  async findOrders(id: string) {
+    return this.orderService.findAll({
+      where: { restaurantId: id },
+      relations: {
+        products: {
+          product: true,
+        },
+      },
+    });
   }
 
   async update(

@@ -34,7 +34,7 @@ import { OrdersModule } from './orders/orders.module';
         database: configService.get<string>('DB_NAME'),
         entities: [__dirname + '/**/*.entity.{ts,js}'],
         synchronize: true,
-        logging: true,
+        // logging: true,
       }),
       inject: [ConfigService],
     }),
