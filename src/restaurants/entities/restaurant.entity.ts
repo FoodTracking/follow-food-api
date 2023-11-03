@@ -3,6 +3,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   Point,
   PrimaryColumn,
@@ -10,6 +11,7 @@ import {
 import { Category } from '../../categories/entities/category.entity';
 import { FFBaseEntity } from '../../common/entities/base.entity';
 import { Identity } from '../../identity/entities/identity.entity';
+import { Product } from '../../products/entities/product.entity';
 
 @Entity()
 export class Restaurant extends FFBaseEntity {
@@ -47,4 +49,7 @@ export class Restaurant extends FFBaseEntity {
   @ManyToOne(() => Category, (category) => category.restaurants)
   @JoinColumn({ name: 'category_id' })
   category: Category;
+
+  @OneToMany(() => Category, (category) => category.restaurants)
+  products: Product[];
 }

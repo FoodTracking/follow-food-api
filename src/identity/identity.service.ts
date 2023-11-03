@@ -8,12 +8,15 @@ import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { Role } from '../auth/enum/user-role.dto';
+import * as fs from 'fs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class IdentityService {
   constructor(
     @InjectRepository(Identity)
     private readonly identityRepository: Repository<Identity>,
+    private readonly config: ConfigService,
   ) {}
 
   create(createUserDto: CreateIdentityDto) {
@@ -22,6 +25,7 @@ export class IdentityService {
       id: id,
       email: createUserDto.email.toLowerCase(),
       password: bcrypt.hashSync(createUserDto.password, 10),
+      role: createUserDto.role,
       ...(createUserDto.role === Role.USER && {
         user: {
           id: id,
@@ -51,16 +55,21 @@ export class IdentityService {
     return this.identityRepository.findOne(options);
   }
 
-  update(
+  async update(
     id: string,
     updateIdentityDto: UpdateIdentityDto,
     avatar?: Express.Multer.File,
   ) {
-    const entity = this.identityRepository.create({
-      ...updateIdentityDto,
-      avatar: avatar?.filename,
-    });
-    return this.identityRepository.update(id, entity);
+    const entity = await this.identityRepository.findOneBy({ id });
+    const created = this.identityRepository.create(updateIdentityDto);
+
+    // Delete old avatar
+    if (avatar) {
+      fs.unlink(`${this.config.get('MULTER_DEST')}/${entity.avatar}`, () => {});
+      created.avatar = avatar.filename;
+    }
+
+    return this.identityRepository.save({ ...entity, ...created });
   }
 
   remove(id: string) {

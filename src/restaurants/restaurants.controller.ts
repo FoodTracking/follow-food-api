@@ -19,6 +19,9 @@ import { Role } from '../auth/enum/user-role.dto';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
 import { Identity } from '../identity/entities/identity.entity';
 import { ApiTags } from '@nestjs/swagger';
+import { ProductDto } from '../products/dto/product.dto';
+import { plainToInstance } from 'class-transformer';
+import { RolesGuard } from '../auth/guard/roles.guard';
 
 @Controller('restaurants')
 @ApiTags('restaurants')
@@ -27,7 +30,7 @@ export class RestaurantsController {
 
   @Post()
   @Roles(Role.RESTAURANT)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   create(
     @Body()
     createRestaurantDto: CreateRestaurantDto,
@@ -49,9 +52,15 @@ export class RestaurantsController {
     return this.restaurantsService.findById(id);
   }
 
+  @Get(':id/products')
+  async findRestaurantProducts(@Param('id') id: string) {
+    const entities = await this.restaurantsService.findProducts(id);
+    return entities.map((entity) => plainToInstance(ProductDto, entity));
+  }
+
   @Patch(':id')
   @Roles(Role.ADMIN, Role.RESTAURANT)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   update(
     @Param('id') id: string,
     @Body()

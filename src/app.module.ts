@@ -10,14 +10,14 @@ import { UsersModule } from './users/users.module';
 import { redisStore } from 'cache-manager-ioredis-yet';
 import { CacheModule } from '@nestjs/cache-manager';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { LoggerMiddleware } from './logger.middleware';
+import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 import { CategoriesModule } from './categories/categories.module';
 import { HttpModule } from '@nestjs/axios';
 import { GeolocationModule } from './geolocation/geolocation.module';
-import { APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { APP_PIPE } from '@nestjs/core';
 import { IdentityModule } from './identity/identity.module';
-import { RolesGuard } from './auth/guard/roles.guard';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -57,13 +57,10 @@ import { RolesGuard } from './auth/guard/roles.guard';
     GeolocationModule,
     CategoriesModule,
     IdentityModule,
+    ProductsModule,
   ],
   controllers: [],
   providers: [
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
     {
       provide: APP_PIPE,
       useClass: ValidationPipe,

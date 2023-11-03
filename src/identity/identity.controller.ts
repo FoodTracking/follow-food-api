@@ -18,14 +18,18 @@ import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { plainToInstance } from 'class-transformer';
 import { ProfileDto } from './dto/profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Roles } from '../auth/decorator/roles.decorator';
+import { Role } from '../auth/enum/user-role.dto';
+import { RolesGuard } from '../auth/guard/roles.guard';
 
 @Controller('identity')
 @ApiTags('identity')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class IdentityController {
   constructor(private readonly identityService: IdentityService) {}
 
   @Get()
+  @Roles(Role.ADMIN)
   findAll() {
     return this.identityService.findAll();
   }
@@ -39,6 +43,7 @@ export class IdentityController {
   }
 
   @Get(':id')
+  @Roles(Role.ADMIN)
   findOne(@Param('id') id: string) {
     return this.identityService.findOneById(id);
   }
