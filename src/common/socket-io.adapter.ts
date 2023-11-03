@@ -35,9 +35,16 @@ const createTokenMiddleware =
     const handshake = socket.handshake;
     const token = handshake.auth.token || handshake.headers['token'];
     logger.debug(`Validating auth token before connection: ${token}`);
+    if (!token) {
+      next(new Error('NO TOKEN'));
+      return;
+    }
 
     const isValid = await authService.validateToken(token);
-    !isValid && next(new Error('FORBIDDEN'));
+    if (!isValid) {
+      next(new Error('FORBIDDEN'));
+      return;
+    }
 
     try {
       const payload = jwtService.verify(token, {
