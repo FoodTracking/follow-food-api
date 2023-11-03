@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
+import { SocketIoAdapter } from './common/socket-io.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -13,6 +14,7 @@ async function bootstrap() {
   // Static files
   const config = app.get<ConfigService>(ConfigService);
   app.useStaticAssets(config.get('MULTER_DEST'), { prefix: '/public' });
+  app.useWebSocketAdapter(new SocketIoAdapter(app));
 
   // Swagger
   const builder = new DocumentBuilder()

@@ -40,6 +40,11 @@ export class UsersController {
     return this.usersService.findOneById(id);
   }
 
+  @Get(':id/orders')
+  findOrders(@Param('id') id: string) {
+    return this.usersService.findOrders(id);
+  }
+
   @Patch(':id')
   @Roles(Role.ADMIN, Role.USER)
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
