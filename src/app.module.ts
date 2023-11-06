@@ -65,16 +65,17 @@ import { OrdersModule } from './orders/orders.module';
   providers: [
     {
       provide: APP_PIPE,
-      useClass: ValidationPipe,
-      useFactory: () =>
-        new ValidationPipe({
-          transform: true,
-        }),
+      useValue: new ValidationPipe({
+        transform: true,
+      }),
     },
   ],
+  exports: [],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }
+
+

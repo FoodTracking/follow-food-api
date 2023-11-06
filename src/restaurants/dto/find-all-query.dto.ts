@@ -1,7 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { PageOptionsDto } from '../../common/dto/page-options.dto';
 
-export class RestaurantsFindAllQueryDto {
+export class RestaurantsFindAllQueryDto extends PageOptionsDto {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()

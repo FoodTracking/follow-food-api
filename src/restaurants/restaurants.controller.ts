@@ -23,6 +23,7 @@ import { ProductDto } from '../products/dto/product.dto';
 import { plainToInstance } from 'class-transformer';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { Order } from '../orders/entities/order.entity';
+import { RestaurantDto } from './dto/restaurant.dto';
 
 @Controller('restaurants')
 @ApiTags('restaurants')
@@ -41,11 +42,12 @@ export class RestaurantsController {
   }
 
   @Get()
-  findAll(
+  async findAll(
     @Query()
     query: RestaurantsFindAllQueryDto,
   ) {
-    return this.restaurantsService.findAllFiltered(query);
+    const entities = await this.restaurantsService.findAllFiltered(query);
+    return entities.map((entity) => plainToInstance(RestaurantDto, entity));
   }
 
   @Get(':id')

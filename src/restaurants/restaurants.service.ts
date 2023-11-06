@@ -39,14 +39,15 @@ export class RestaurantsService {
   findAllFiltered(query: RestaurantsFindAllQueryDto) {
     const builder = this.restaurantsRepository
       .createQueryBuilder('restaurant')
-      .select();
+      .select()
+      .innerJoinAndSelect('restaurant.category', 'category')
+      .innerJoinAndSelect('restaurant.identity', 'identity');
 
     if (query.name) {
-      builder.andWhere('name ILIKE :name', { name: `%${query.name}%` });
+      builder.andWhere('restaurant.name ILIKE :name', { name: `%${query.name}%` });
     }
 
     if (query.category) {
-      builder.innerJoinAndSelect('restaurant.category', 'category');
       builder.andWhere('category_id = :category', { category: query.category });
     }
 
@@ -62,6 +63,10 @@ export class RestaurantsService {
         .setParameter('latitude', query.lat)
         .setParameter('radius', query.radius);
     }
+
+    // Pagination
+    builder.take(query.take);
+    builder.skip(query.skip);
 
     return builder.getMany();
   }
