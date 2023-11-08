@@ -44,7 +44,9 @@ export class RestaurantsService {
       .innerJoinAndSelect('restaurant.identity', 'identity');
 
     if (query.name) {
-      builder.andWhere('restaurant.name ILIKE :name', { name: `%${query.name}%` });
+      builder.andWhere('restaurant.name ILIKE :name', {
+        name: `%${query.name}%`,
+      });
     }
 
     if (query.category) {
@@ -62,6 +64,10 @@ export class RestaurantsService {
         .setParameter('longitude', query.long)
         .setParameter('latitude', query.lat)
         .setParameter('radius', query.radius);
+    }
+
+    if (query.sort) {
+      builder.orderBy(`restaurant.${query.sort}`, query.order ?? 'ASC');
     }
 
     // Pagination

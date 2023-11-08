@@ -1,8 +1,9 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
+import { SortableDto } from './sortable.dto';
 
-export class PageOptionsDto {
+export class PageOptionsDto extends SortableDto {
   @ApiPropertyOptional({
     minimum: 1,
     default: 1,
