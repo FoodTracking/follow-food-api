@@ -35,8 +35,12 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() identity: CreateIdentityDto) {
-    return this.authService.register(identity);
+  async register(
+    @RealIP() ip: string,
+    @Headers('User-Agent') userAgent: string,
+    @Body() identity: CreateIdentityDto,
+  ) {
+    return this.authService.register(identity, userAgent, ip);
   }
 
   @Get('refresh')

@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -26,7 +25,6 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly identityService: IdentityService,
     private readonly jwtService: JwtService,
-    private readonly userService: UsersService,
   ) {}
 
   async validateUser(email: string, password: string) {
@@ -138,10 +136,9 @@ export class AuthService {
     return tokens;
   }
 
-  async register(user: CreateIdentityDto) {
+  async register(user: CreateIdentityDto, userAgent: string, ip: string) {
     const entity = await this.identityService.create(user);
-    delete entity.password;
-    return entity;
+    return this.login(entity, userAgent, ip);
   }
 
   async logout(token: string) {
