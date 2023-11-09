@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -16,6 +17,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { Role } from '../auth/enum/user-role.dto';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { RolesGuard } from '../auth/guard/roles.guard';
+import { PageOptionsDto } from '../common/dto/page-options.dto';
+import { plainToInstance } from 'class-transformer';
+import { UserOrderDto } from './dto/user-order.dto';
 
 @Controller('users')
 @ApiTags('users')
@@ -41,8 +45,9 @@ export class UsersController {
   }
 
   @Get(':id/orders')
-  findOrders(@Param('id') id: string) {
-    return this.usersService.findOrders(id);
+  async findOrders(@Param('id') id: string, @Query() query: PageOptionsDto) {
+    const entities = await this.usersService.findOrders(id, query);
+    return entities.map((entity) => plainToInstance(UserOrderDto, entity));
   }
 
   @Patch(':id')

@@ -22,8 +22,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { ProductDto } from '../products/dto/product.dto';
 import { plainToInstance } from 'class-transformer';
 import { RolesGuard } from '../auth/guard/roles.guard';
-import { Order } from '../orders/entities/order.entity';
 import { RestaurantDto } from './dto/restaurant.dto';
+import { RestaurantOrderDto } from './dto/restaurant-order.dto';
 import { PageOptionsDto } from '../common/dto/page-options.dto';
 
 @Controller('restaurants')
@@ -68,7 +68,9 @@ export class RestaurantsController {
   @Get(':id/orders')
   async findRestaurantOrders(@Param('id') id: string) {
     const entities = await this.restaurantsService.findOrders(id);
-    return entities.map((entity) => plainToInstance(Order, entity));
+    return entities.map((entity) =>
+      plainToInstance(RestaurantOrderDto, entity),
+    );
   }
 
   @Patch(':id')
