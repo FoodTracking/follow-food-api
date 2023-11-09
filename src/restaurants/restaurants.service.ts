@@ -14,6 +14,7 @@ import { Role } from '../auth/enum/user-role.dto';
 import { Identity } from '../identity/entities/identity.entity';
 import { ProductsService } from '../products/products.service';
 import { OrdersService } from '../orders/orders.service';
+import { PageOptionsDto } from '../common/dto/page-options.dto';
 
 @Injectable()
 export class RestaurantsService {
@@ -81,8 +82,13 @@ export class RestaurantsService {
     return this.restaurantsRepository.findOne(options);
   }
 
-  findProducts(id: string) {
-    return this.productsService.findAll({ where: { restaurantId: id } });
+  findProducts(id: string, query: PageOptionsDto) {
+    return this.productsService.findAll({
+      where: { restaurantId: id },
+      order: { [query.sort]: query.order },
+      take: query.take,
+      skip: query.skip,
+    });
   }
 
   async findOrders(id: string) {
