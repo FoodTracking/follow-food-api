@@ -3,7 +3,7 @@ import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual, Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository} from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
@@ -59,7 +59,7 @@ export class AuthService {
       identityId: userId,
       refreshToken: hashedToken,
       invalidated: false,
-      createdAt: LessThanOrEqual(
+      createdAt: MoreThanOrEqual(
         dayjs().subtract(jwtTTL, 'millisecond').toDate(),
       ),
     });
