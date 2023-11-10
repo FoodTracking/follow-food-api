@@ -98,6 +98,7 @@ export class RestaurantsService {
         products: {
           product: true,
         },
+        user: true,
       },
     });
   }

@@ -9,7 +9,7 @@ export class RestaurantDto {
   name: string;
 
   @Expose()
-  @Transform(({ obj }) => obj.category.name)
+  @Transform(({ obj }) => obj?.category?.name)
   category: string;
 
   @Expose()
