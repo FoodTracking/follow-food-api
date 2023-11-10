@@ -100,6 +100,7 @@ export class RestaurantsService {
         },
         user: true,
       },
+      order: { createdAt: 'DESC' },
     });
   }
 
