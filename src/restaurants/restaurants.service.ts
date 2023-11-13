@@ -125,7 +125,7 @@ export class RestaurantsService {
     await this.restaurantsRepository.update(
       {
         id,
-        ...(user.role !== Role.ADMIN ? { ownerId: user.id } : undefined),
+        ...(user.role !== Role.ADMIN ? { id: user.id } : undefined),
       },
       entity,
     );

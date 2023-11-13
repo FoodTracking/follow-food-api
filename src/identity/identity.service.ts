@@ -63,6 +63,10 @@ export class IdentityService {
     const entity = await this.identityRepository.findOneBy({ id });
     const created = this.identityRepository.create(updateIdentityDto);
 
+    if (created.password) {
+      created.password = bcrypt.hashSync(created.password, 10);
+    }
+
     // Delete old avatar
     if (avatar) {
       fs.unlink(`${this.config.get('MULTER_DEST')}/${entity.avatar}`, () => {});
