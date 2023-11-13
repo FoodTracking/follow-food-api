@@ -7,7 +7,7 @@ import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from './entities/restaurant.entity';
-import { FindOneOptions, Repository } from 'typeorm';
+import { FindOneOptions, In, Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { RestaurantsFindAllQueryDto } from './dto/find-all-query.dto';
 import { Role } from '../auth/enum/user-role.dto';
@@ -15,6 +15,7 @@ import { Identity } from '../identity/entities/identity.entity';
 import { ProductsService } from '../products/products.service';
 import { OrdersService } from '../orders/orders.service';
 import { PageOptionsDto } from '../common/dto/page-options.dto';
+import { FindOrdersQueryDto } from './dto/find-orders-query.dto';
 
 @Injectable()
 export class RestaurantsService {
@@ -50,8 +51,14 @@ export class RestaurantsService {
       });
     }
 
-    if (query.category) {
-      builder.andWhere('category_id = :category', { category: query.category });
+    if (query.categories) {
+      const categories = Array.isArray(query.categories)
+        ? query.categories
+        : [query.categories];
+
+      builder.andWhere('category_id IN (:categories)', {
+        categories: categories.join(','),
+      });
     }
 
     if (query.lat && query.long && query.radius) {
@@ -82,9 +89,13 @@ export class RestaurantsService {
     return this.restaurantsRepository.findOne(options);
   }
 
-  findProducts(id: string, query: PageOptionsDto) {
+  findProducts(id: string, query: FindOrdersQueryDto) {
+    const ids = Array.isArray(query.ids) ? query.ids : [query.ids];
     return this.productsService.findAll({
-      where: { restaurantId: id },
+      where: {
+        ...(query.ids && { id: In(ids) }),
+        restaurantId: id,
+      },
       order: { [query.sort]: query.order },
       take: query.take,
       skip: query.skip,
@@ -127,7 +138,12 @@ export class RestaurantsService {
   }
 
   findById(id: string) {
-    const entity = this.restaurantsRepository.findOne({ where: { id } });
+    const entity = this.restaurantsRepository.findOne({
+      relations: {
+        identity: true,
+      },
+      where: { id },
+    });
     if (!entity) throw new NotFoundException();
     return entity;
   }

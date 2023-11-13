@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import {IsNumber, IsOptional, IsString, IsUUID} from 'class-validator';
 import { PageOptionsDto } from '../../common/dto/page-options.dto';
 
 export class RestaurantsFindAllQueryDto extends PageOptionsDto {
@@ -9,9 +9,9 @@ export class RestaurantsFindAllQueryDto extends PageOptionsDto {
   name?: string;
 
   @ApiPropertyOptional()
-  @IsString()
+  @IsUUID('4', { each: true })
   @IsOptional()
-  category?: string;
+  categories?: string[];
 
   @ApiPropertyOptional()
   @IsString()

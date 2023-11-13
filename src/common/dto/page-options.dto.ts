@@ -21,12 +21,18 @@ export class PageOptionsDto extends SortableDto {
   })
   @Type(() => Number)
   @IsInt()
-  @Min(1)
+  @Min(-1)
   @Max(50)
   @IsOptional()
-  readonly take?: number = 10;
+  readonly size?: number = 1;
 
-  get skip(): number {
-    return (this.page - 1) * this.take;
+  get take(): number | undefined {
+    const take = this.size;
+    return take <= 0 ? undefined : take;
+  }
+
+  get skip(): number | undefined {
+    const skip = (this.page - 1) * this.take;
+    return !isFinite(skip) || skip <= 0 ? undefined : skip;
   }
 }

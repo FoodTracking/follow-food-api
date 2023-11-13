@@ -25,6 +25,8 @@ import { RolesGuard } from '../auth/guard/roles.guard';
 import { RestaurantDto } from './dto/restaurant.dto';
 import { RestaurantOrderDto } from './dto/restaurant-order.dto';
 import { PageOptionsDto } from '../common/dto/page-options.dto';
+import {RestaurantDetailsDto} from "./dto/restaurant-details.dto";
+import {FindOrdersQueryDto} from "./dto/find-orders-query.dto";
 
 @Controller('restaurants')
 @ApiTags('restaurants')
@@ -52,14 +54,15 @@ export class RestaurantsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.restaurantsService.findById(id);
+  async findOne(@Param('id') id: string) {
+    const entity = await this.restaurantsService.findById(id);
+    return plainToInstance(RestaurantDetailsDto, entity);
   }
 
   @Get(':id/products')
   async findRestaurantProducts(
     @Param('id') id: string,
-    @Query() query: PageOptionsDto,
+    @Query() query: FindOrdersQueryDto,
   ) {
     const entities = await this.restaurantsService.findProducts(id, query);
     return entities.map((entity) => plainToInstance(ProductDto, entity));
