@@ -49,8 +49,9 @@ export class ProductsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productsService.findById(id);
+  async findOne(@Param('id') id: string) {
+    const entity = await this.productsService.findById(id);
+    return plainToInstance(ProductDto, entity);
   }
 
   @Patch(':id')
@@ -59,7 +60,7 @@ export class ProductsController {
   update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFile() image?: Express.Multer.File,
   ) {
     const entity = this.productsService.update(id, updateProductDto, image);
     return plainToInstance(ProductDto, entity);

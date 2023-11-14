@@ -61,7 +61,7 @@ export class ProductsService {
   async update(
     id: string,
     updateProductDto: UpdateProductDto,
-    image: Express.Multer.File,
+    image?: Express.Multer.File,
   ) {
     const entity = await this.findById(id);
     const created = this.repository.create(updateProductDto);
