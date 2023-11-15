@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateIdentityDto } from './dto/create-identity.dto';
 import { UpdateIdentityDto } from './dto/update-identity.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,6 +10,8 @@ import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { Role } from '../auth/enum/user-role.dto';
 import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
+import { GeolocationService } from '../geolocation/geolocation.service';
+import { Point } from 'typeorm/driver/types/GeoJsonTypes';
 
 @Injectable()
 export class IdentityService {
@@ -17,10 +19,29 @@ export class IdentityService {
     @InjectRepository(Identity)
     private readonly identityRepository: Repository<Identity>,
     private readonly config: ConfigService,
+    private readonly geoService: GeolocationService,
   ) {}
 
-  create(createUserDto: CreateIdentityDto) {
+  async create(createUserDto: CreateIdentityDto) {
     const id = uuid();
+
+    // Geolocation
+    let location: Point = undefined;
+    const address = createUserDto.restaurant?.address;
+    if (address) {
+      const data = await this.geoService.getGeolocation(address);
+      const feature = data.features[0];
+      if (feature.geometry.type !== 'Point') {
+        throw new BadRequestException('Invalid address');
+      }
+
+      const [long, lat] = feature.geometry.coordinates;
+      location = {
+        type: 'Point',
+        coordinates: [lat, long],
+      };
+    }
+
     const entity = this.identityRepository.create({
       id: id,
       email: createUserDto.email.toLowerCase(),
@@ -36,6 +57,7 @@ export class IdentityService {
         restaurant: {
           id: id,
           ...createUserDto.restaurant,
+          location,
         },
       }),
     });

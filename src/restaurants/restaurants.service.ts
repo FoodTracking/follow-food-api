@@ -14,8 +14,8 @@ import { Role } from '../auth/enum/user-role.dto';
 import { Identity } from '../identity/entities/identity.entity';
 import { ProductsService } from '../products/products.service';
 import { OrdersService } from '../orders/orders.service';
-import { PageOptionsDto } from '../common/dto/page-options.dto';
 import { FindOrdersQueryDto } from './dto/find-orders-query.dto';
+import { GeolocationService } from '../geolocation/geolocation.service';
 
 @Injectable()
 export class RestaurantsService {
@@ -24,12 +24,21 @@ export class RestaurantsService {
     private restaurantsRepository: Repository<Restaurant>,
     private orderService: OrdersService,
     private productsService: ProductsService,
+    private geoService: GeolocationService,
   ) {}
 
-  create(createRestaurantDto: CreateRestaurantDto, user: Identity) {
+  async create(dto: CreateRestaurantDto, user: Identity) {
+    const data = await this.geoService.getGeolocation(dto.address);
+    const feature = data.features[0];
+    if (feature.geometry.type !== 'Point') {
+      throw new BadRequestException('Invalid address');
+    }
+
+    const [long, lat] = feature.geometry.coordinates;
     const entity = this.restaurantsRepository.create({
-      ...createRestaurantDto,
+      ...dto,
       id: user.id,
+      location: { type: 'Point', coordinates: [lat, long] },
     });
     return this.restaurantsRepository.save(entity);
   }
@@ -38,10 +47,10 @@ export class RestaurantsService {
     return this.restaurantsRepository.find(options);
   }
 
-  findAllFiltered(query: RestaurantsFindAllQueryDto) {
+  async findAllFiltered(query: RestaurantsFindAllQueryDto) {
     const builder = this.restaurantsRepository
       .createQueryBuilder('restaurant')
-      .select()
+      .select('restaurant') // Select all fields from restaurant
       .innerJoinAndSelect('restaurant.category', 'category')
       .innerJoinAndSelect('restaurant.identity', 'identity');
 
@@ -61,28 +70,32 @@ export class RestaurantsService {
       });
     }
 
-    if (query.lat && query.long && query.radius) {
+    if (query.lat && query.long) {
       builder
-        .andWhere(
-          `ST_DWithin(restaurant.location, ST_MakePoint(:longitude, :latitude)::geography, :radius)`,
-        )
-        .orderBy(
+        .addSelect(
           `ST_Distance(restaurant.location, ST_MakePoint(:longitude, :latitude)::geography)`,
+          'distance',
         )
+        .orderBy(`distance`)
         .setParameter('longitude', query.long)
-        .setParameter('latitude', query.lat)
-        .setParameter('radius', query.radius);
+        .setParameter('latitude', query.lat);
     }
 
     if (query.sort) {
-      builder.orderBy(`restaurant.${query.sort}`, query.order ?? 'ASC');
+      builder.addOrderBy(`restaurant.${query.sort}`, query.order ?? 'ASC');
     }
 
     // Pagination
     builder.take(query.take);
     builder.skip(query.skip);
 
-    return builder.getMany();
+    // Mapped distance to entity
+    const results = await builder.getRawAndEntities();
+    results.entities.forEach((entity, index) => {
+      entity.distance = results.raw[index].distance;
+    });
+
+    return results.entities;
   }
 
   findOne(options: FindOneOptions<Restaurant>) {
@@ -115,13 +128,20 @@ export class RestaurantsService {
     });
   }
 
-  async update(
-    id: string,
-    updateRestaurantDto: UpdateRestaurantDto,
-    user: Identity,
-  ) {
-    if (id !== updateRestaurantDto.id) throw new BadRequestException();
-    const entity = this.restaurantsRepository.create(updateRestaurantDto);
+  async update(id: string, dto: UpdateRestaurantDto, user: Identity) {
+    if (id !== dto.id) throw new BadRequestException();
+
+    const data = await this.geoService.getGeolocation(dto.address);
+    const feature = data.features[0];
+    if (feature.geometry.type !== 'Point') {
+      throw new BadRequestException('Invalid address');
+    }
+
+    const [long, lat] = feature.geometry.coordinates;
+    const entity = this.restaurantsRepository.create({
+      ...dto,
+      location: { type: 'Point', coordinates: [lat, long] },
+    });
     await this.restaurantsRepository.update(
       {
         id,

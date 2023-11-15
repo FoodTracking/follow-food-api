@@ -24,9 +24,8 @@ import { plainToInstance } from 'class-transformer';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { RestaurantDto } from './dto/restaurant.dto';
 import { RestaurantOrderDto } from './dto/restaurant-order.dto';
-import { PageOptionsDto } from '../common/dto/page-options.dto';
-import {RestaurantDetailsDto} from "./dto/restaurant-details.dto";
-import {FindOrdersQueryDto} from "./dto/find-orders-query.dto";
+import { RestaurantDetailsDto } from './dto/restaurant-details.dto';
+import { FindOrdersQueryDto } from './dto/find-orders-query.dto';
 
 @Controller('restaurants')
 @ApiTags('restaurants')

@@ -22,9 +22,4 @@ export class RestaurantsFindAllQueryDto extends PageOptionsDto {
   @IsString()
   @IsOptional()
   long?: number;
-
-  @ApiPropertyOptional()
-  @IsNumber()
-  @IsOptional()
-  radius?: number;
 }

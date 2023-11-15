@@ -56,4 +56,7 @@ export class Restaurant extends FFBaseEntity {
 
   @OneToMany(() => Order, (order) => order.restaurant)
   orders: Order[];
+
+  // Virtual fields
+  distance: string;
 }
