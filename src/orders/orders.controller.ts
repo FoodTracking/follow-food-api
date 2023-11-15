@@ -25,7 +25,7 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  @Roles(Role.USER)
+  @Roles(Role.ADMIN, Role.USER)
   create(
     @Body() createOrderDto: CreateOrderDto,
     @CurrentUser() identity: Identity,
@@ -46,11 +46,13 @@ export class OrdersController {
   }
 
   @Patch(':id/next')
+  @Roles(Role.ADMIN, Role.RESTAURANT)
   update(@Param('id') id: string) {
     return this.ordersService.next(id);
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN, Role.RESTAURANT)
   remove(@Param('id') id: string) {
     return this.ordersService.remove(id);
   }

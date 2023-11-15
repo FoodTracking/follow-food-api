@@ -26,6 +26,7 @@ import { RestaurantDto } from './dto/restaurant.dto';
 import { RestaurantOrderDto } from './dto/restaurant-order.dto';
 import { RestaurantDetailsDto } from './dto/restaurant-details.dto';
 import { FindOrdersQueryDto } from './dto/find-orders-query.dto';
+import {FindProductsQueryDto} from "./dto/find-products-query.dto";
 
 @Controller('restaurants')
 @ApiTags('restaurants')
@@ -61,15 +62,18 @@ export class RestaurantsController {
   @Get(':id/products')
   async findRestaurantProducts(
     @Param('id') id: string,
-    @Query() query: FindOrdersQueryDto,
+    @Query() query: FindProductsQueryDto,
   ) {
     const entities = await this.restaurantsService.findProducts(id, query);
     return entities.map((entity) => plainToInstance(ProductDto, entity));
   }
 
   @Get(':id/orders')
-  async findRestaurantOrders(@Param('id') id: string) {
-    const entities = await this.restaurantsService.findOrders(id);
+  async findRestaurantOrders(
+    @Param('id') id: string,
+    @Query() query: FindOrdersQueryDto,
+  ) {
+    const entities = await this.restaurantsService.findOrders(id, query);
     return entities.map((entity) =>
       plainToInstance(RestaurantOrderDto, entity),
     );

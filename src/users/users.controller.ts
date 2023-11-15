@@ -45,6 +45,7 @@ export class UsersController {
   }
 
   @Get(':id/orders')
+  @Roles(Role.ADMIN, Role.USER)
   async findOrders(@Param('id') id: string, @Query() query: PageOptionsDto) {
     const entities = await this.usersService.findOrders(id, query);
     return entities.map((entity) => plainToInstance(UserOrderDto, entity));

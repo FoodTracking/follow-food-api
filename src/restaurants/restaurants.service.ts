@@ -16,6 +16,7 @@ import { ProductsService } from '../products/products.service';
 import { OrdersService } from '../orders/orders.service';
 import { FindOrdersQueryDto } from './dto/find-orders-query.dto';
 import { GeolocationService } from '../geolocation/geolocation.service';
+import { FindProductsQueryDto } from './dto/find-products-query.dto';
 
 @Injectable()
 export class RestaurantsService {
@@ -102,7 +103,7 @@ export class RestaurantsService {
     return this.restaurantsRepository.findOne(options);
   }
 
-  findProducts(id: string, query: FindOrdersQueryDto) {
+  findProducts(id: string, query: FindProductsQueryDto) {
     const ids = Array.isArray(query.ids) ? query.ids : [query.ids];
     return this.productsService.findAll({
       where: {
@@ -115,16 +116,22 @@ export class RestaurantsService {
     });
   }
 
-  async findOrders(id: string) {
+  async findOrders(id: string, query: FindOrdersQueryDto) {
+    const status = Array.isArray(query.status) ? query.status : [query.status];
     return this.orderService.findAll({
-      where: { restaurantId: id },
+      where: {
+        restaurantId: id,
+        ...(query.status && { status: In(status) }),
+      },
       relations: {
         products: {
           product: true,
         },
         user: true,
       },
-      order: { createdAt: 'DESC' },
+      order: { createdAt: 'DESC', [query.sort]: query.order },
+      take: query.take,
+      skip: query.skip,
     });
   }
 
