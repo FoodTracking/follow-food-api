@@ -44,7 +44,7 @@ export class OrdersService {
         },
       },
     });
-    this.orderGateway.newOrder(createOrderDto.restaurantId, created);
+    this.orderGateway.newOrder(created);
     return saved;
   }
 
@@ -77,7 +77,7 @@ export class OrdersService {
     const nextStatus = EnumX.of(OrderStatusEnum).next(entity.status);
 
     entity.status = nextStatus ?? entity.status;
-    this.orderGateway.updateOrder(entity.restaurantId, entity);
+    this.orderGateway.updateOrder(entity);
     return this.repository.save(entity);
   }
 

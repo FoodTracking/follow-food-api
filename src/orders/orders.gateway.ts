@@ -18,21 +18,22 @@ export class OrdersGateway implements OnGatewayConnection {
   // Jwt Authentication by middleware (socket-io.adapter.ts)
   // https://github.com/nestjs/nest/issues/882 (guard aren't supported)
   handleConnection(client: Socket & { user: Partial<Identity> }) {
-    if (client.user.role !== Role.RESTAURANT) client.disconnect();
     console.log(`Client ${client.id} has connected`);
     client.join(client.user.id);
     console.log(`Client ${client.id} has joined room ${client.user.id}`);
   }
 
-  newOrder(id: string, order: Order) {
-    console.log('order', order);
+  newOrder(order: Order) {
     const data = plainToInstance(OrderOverviewDto, order, {
       excludeExtraneousValues: true,
     });
-    this.server.to(id).emit('newOrder', data);
+    this.server.to(order.restaurantId).to(order.userId).emit('newOrder', data);
   }
 
-  updateOrder(id: string, order: Order) {
-    this.server.to(id).emit('updateOrder', order);
+  updateOrder(order: Order) {
+    this.server
+      .to(order.restaurantId)
+      .to(order.userId)
+      .emit('updateOrder', order);
   }
 }

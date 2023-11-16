@@ -1,16 +1,19 @@
-import {APP_PIPE, NestFactory} from '@nestjs/core';
+import { APP_PIPE, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { SocketIoAdapter } from './common/socket-io.adapter';
-import {ValidationPipe} from "@nestjs/common";
+import { json as expressJson, urlencoded as expressUrlEncoded } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Setup app
   app.disable('x-powered-by');
+  // the next two lines did the trick
+  app.use(expressJson({ limit: '50mb' }));
+  app.use(expressUrlEncoded({ limit: '50mb', extended: true }));
 
   // Static files
   const config = app.get<ConfigService>(ConfigService);
