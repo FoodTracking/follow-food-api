@@ -17,9 +17,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { Role } from '../auth/enum/user-role.dto';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { RolesGuard } from '../auth/guard/roles.guard';
-import { PageOptionsDto } from '../common/dto/page-options.dto';
 import { plainToInstance } from 'class-transformer';
 import { UserOrderDto } from './dto/user-order.dto';
+import { FindOrdersQueryDto } from '../restaurants/dto/find-orders-query.dto';
 
 @Controller('users')
 @ApiTags('users')
@@ -46,7 +46,10 @@ export class UsersController {
 
   @Get(':id/orders')
   @Roles(Role.ADMIN, Role.USER)
-  async findOrders(@Param('id') id: string, @Query() query: PageOptionsDto) {
+  async findOrders(
+    @Param('id') id: string,
+    @Query() query: FindOrdersQueryDto,
+  ) {
     const entities = await this.usersService.findOrders(id, query);
     return entities.map((entity) => plainToInstance(UserOrderDto, entity));
   }

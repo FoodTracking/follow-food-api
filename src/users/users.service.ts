@@ -3,10 +3,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { FindOneOptions, Repository } from 'typeorm';
+import { FindOneOptions, In, Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { OrdersService } from '../orders/orders.service';
-import { PageOptionsDto } from '../common/dto/page-options.dto';
+import { FindOrdersQueryDto } from '../restaurants/dto/find-orders-query.dto';
 
 @Injectable()
 export class UsersService {
@@ -25,7 +25,8 @@ export class UsersService {
     return this.userRepository.find(options);
   }
 
-  findOrders(id: string, query: PageOptionsDto) {
+  findOrders(id: string, query: FindOrdersQueryDto) {
+    const status = Array.isArray(query.status) ? query.status : [query.status];
     return this.orderService.findAll({
       relations: {
         products: {
@@ -35,7 +36,7 @@ export class UsersService {
           identity: true,
         },
       },
-      where: { userId: id },
+      where: { userId: id, ...(query.status && { status: In(status) }) },
       order: {
         createdAt: 'DESC',
         [query.sort]: query.order,
