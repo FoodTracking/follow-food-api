@@ -16,6 +16,8 @@ import { CurrentUser } from '../auth/decorator/current-user.decorator';
 import { Identity } from '../identity/entities/identity.entity';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { Role } from '../auth/enum/user-role.dto';
+import { plainToInstance } from 'class-transformer';
+import { OrderDto } from './dto/order.dto';
 
 @Controller('orders')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -23,7 +25,7 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  @Roles(Role.USER)
+  @Roles(Role.ADMIN, Role.USER)
   create(
     @Body() createOrderDto: CreateOrderDto,
     @CurrentUser() identity: Identity,
@@ -39,15 +41,18 @@ export class OrdersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.ordersService.findById(id);
+    const entity = this.ordersService.findById(id);
+    return plainToInstance(OrderDto, entity);
   }
 
   @Patch(':id/next')
+  @Roles(Role.ADMIN, Role.RESTAURANT)
   update(@Param('id') id: string) {
     return this.ordersService.next(id);
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN, Role.RESTAURANT)
   remove(@Param('id') id: string) {
     return this.ordersService.remove(id);
   }

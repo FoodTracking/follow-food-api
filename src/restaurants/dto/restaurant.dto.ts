@@ -22,4 +22,7 @@ export class RestaurantDto {
       : undefined,
   )
   image: string;
+
+  @Expose()
+  distance: string; // in Meters
 }

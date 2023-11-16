@@ -36,7 +36,10 @@ export class UsersService {
         },
       },
       where: { userId: id },
-      order: { [query.sort]: query.order },
+      order: {
+        createdAt: 'DESC',
+        [query.sort]: query.order,
+      },
       take: query.take,
       skip: query.skip,
     });

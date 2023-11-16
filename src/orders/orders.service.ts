@@ -57,7 +57,17 @@ export class OrdersService {
   }
 
   findById(id: string) {
-    const entity = this.repository.findOneBy({ id });
+    const entity = this.repository.findOne({
+      relations: {
+        products: {
+          product: true,
+        },
+        restaurant: {
+          identity: true,
+        },
+      },
+      where: { id },
+    });
     if (!entity) throw new NotFoundException('Order not found');
     return entity;
   }

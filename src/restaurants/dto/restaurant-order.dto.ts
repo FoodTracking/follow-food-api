@@ -19,6 +19,14 @@ export class RestaurantOrderDto {
   products: OrderItemDto[];
 
   @Expose()
+  @IsNumber()
+  @Transform(({ obj }) => {
+    const o = obj as Order;
+    return o.products.length;
+  })
+  quantity: number;
+
+  @Expose()
   @Transform(({ obj }) => {
     const o = obj as Order;
     return o.products.reduce((acc, curr) => {
