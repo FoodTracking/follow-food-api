@@ -54,16 +54,27 @@ export class ProductsService {
     return this.repository.find(options);
   }
 
-  findOne(options: FindOneOptions) {
+  findOne(options: FindOneOptions<Product>) {
     return this.repository.findOne(options);
   }
 
   async update(
     id: string,
     updateProductDto: UpdateProductDto,
+    identity: Identity,
     image?: Express.Multer.File,
   ) {
-    const entity = await this.findById(id);
+    const entity = await this.findOne({
+      where: {
+        id,
+        ...(identity.role !== Role.ADMIN && { restaurantId: identity.id }),
+      },
+    });
+
+    if (!entity) {
+      throw new NotFoundException(`Product #${id} not found`);
+    }
+
     const created = this.repository.create(updateProductDto);
 
     // Delete old avatar

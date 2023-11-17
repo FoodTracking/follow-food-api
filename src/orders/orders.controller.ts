@@ -50,10 +50,4 @@ export class OrdersController {
   update(@Param('id') id: string) {
     return this.ordersService.next(id);
   }
-
-  @Delete(':id')
-  @Roles(Role.ADMIN, Role.RESTAURANT)
-  remove(@Param('id') id: string) {
-    return this.ordersService.remove(id);
-  }
 }

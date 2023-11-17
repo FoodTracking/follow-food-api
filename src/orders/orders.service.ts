@@ -10,6 +10,7 @@ import { Identity } from '../identity/entities/identity.entity';
 import { OrdersGateway } from './orders.gateway';
 import { OrderStatusEnum } from './entities/order-status.enum';
 import { EnumX } from '../utils/enum';
+import { Role } from '../auth/enum/user-role.dto';
 
 @Injectable()
 export class OrdersService {
@@ -72,8 +73,14 @@ export class OrdersService {
     return entity;
   }
 
-  async next(id: string) {
-    const entity = await this.repository.findOneBy({ id });
+  async next(id: string, identity: Identity) {
+    const entity = await this.repository.findOneBy({
+      id,
+      ...(identity.role !== Role.ADMIN && { restaurantId: id }),
+    });
+
+    if (!entity) throw new NotFoundException('Order not found');
+
     const nextStatus = EnumX.of(OrderStatusEnum).next(entity.status);
 
     entity.status = nextStatus ?? entity.status;
