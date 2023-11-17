@@ -38,7 +38,7 @@ export class IdentityService {
       const [long, lat] = feature.geometry.coordinates;
       location = {
         type: 'Point',
-        coordinates: [lat, long],
+        coordinates: [long, lat],
       };
     }
 

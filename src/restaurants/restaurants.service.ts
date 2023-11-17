@@ -39,7 +39,7 @@ export class RestaurantsService {
     const entity = this.restaurantsRepository.create({
       ...dto,
       id: user.id,
-      location: { type: 'Point', coordinates: [lat, long] },
+      location: { type: 'Point', coordinates: [long, lat] },
     });
     return this.restaurantsRepository.save(entity);
   }
@@ -149,7 +149,7 @@ export class RestaurantsService {
     const [long, lat] = feature.geometry.coordinates;
     const entity = this.restaurantsRepository.create({
       ...dto,
-      location: { type: 'Point', coordinates: [lat, long] },
+      location: { type: 'Point', coordinates: [long, lat] },
     });
     await this.restaurantsRepository.update(
       {
