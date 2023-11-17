@@ -35,6 +35,9 @@ $ yarn install
 ## Running the app
 
 ```bash
+# databases
+$ docker compose up
+
 # development
 $ yarn run start
 
@@ -43,6 +46,7 @@ $ yarn run start:dev
 
 # production mode
 $ yarn run start:prod
+
 ```
 
 ## Test
