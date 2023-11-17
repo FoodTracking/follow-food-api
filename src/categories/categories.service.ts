@@ -17,7 +17,9 @@ export class CategoriesService {
   }
 
   findAll() {
-    return this.categoriesRepository.find();
+    return this.categoriesRepository.find({
+      order: { name: 'ASC' },
+    });
   }
 
   findOne(id: string) {

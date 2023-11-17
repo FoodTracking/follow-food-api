@@ -95,7 +95,14 @@ export class IdentityService {
       created.avatar = avatar.filename;
     }
 
-    return this.identityRepository.save({ ...entity, ...created });
+    await this.identityRepository.save({ ...entity, ...created });
+    return await this.findOne({
+      relations: {
+        user: true,
+        restaurant: true,
+      },
+      where: { id: id },
+    });
   }
 
   remove(id: string) {

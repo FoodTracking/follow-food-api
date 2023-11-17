@@ -66,9 +66,8 @@ export class RestaurantsService {
         ? query.categories
         : [query.categories];
 
-      builder.andWhere('category_id IN (:categories)', {
-        categories: categories.join(','),
-      });
+      builder.andWhere('category_id IN (:...categories)');
+      builder.setParameter('categories', categories);
     }
 
     if (query.lat && query.long) {
@@ -127,11 +126,14 @@ export class RestaurantsService {
         products: {
           product: true,
         },
-        user: true,
+        user: {
+          identity: true,
+        },
       },
       order: { createdAt: 'DESC', [query.sort]: query.order },
       take: query.take,
       skip: query.skip,
+      withDeleted: true,
     });
   }
 
