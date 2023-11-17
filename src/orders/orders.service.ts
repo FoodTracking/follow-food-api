@@ -76,7 +76,7 @@ export class OrdersService {
   async next(id: string, identity: Identity) {
     const entity = await this.repository.findOneBy({
       id,
-      ...(identity.role !== Role.ADMIN && { restaurantId: id }),
+      ...(identity.role !== Role.ADMIN && { restaurantId: identity.id }),
     });
 
     if (!entity) throw new NotFoundException('Order not found');

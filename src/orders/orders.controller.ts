@@ -47,7 +47,7 @@ export class OrdersController {
 
   @Patch(':id/next')
   @Roles(Role.ADMIN, Role.RESTAURANT)
-  update(@Param('id') id: string) {
-    return this.ordersService.next(id);
+  update(@CurrentUser() identity: Identity, @Param('id') id: string) {
+    return this.ordersService.next(id, identity);
   }
 }
