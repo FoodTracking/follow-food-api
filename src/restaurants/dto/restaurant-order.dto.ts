@@ -3,6 +3,7 @@ import { IsNumber, IsUUID } from 'class-validator';
 import { OrderStatusEnum } from '../../orders/entities/order-status.enum';
 import { Order } from '../../orders/entities/order.entity';
 import { OrderItemDto } from '../../orders/dto/order-item.dto';
+import { UserDto } from '../../users/dto/user.dto';
 
 @Exclude()
 export class RestaurantOrderDto {
@@ -11,8 +12,8 @@ export class RestaurantOrderDto {
   id: string;
 
   @Expose()
-  @Transform(({ obj }) => `${obj.user.firstName} ${obj.user.lastName[0]}.`)
-  user: string;
+  @Type(() => UserDto)
+  user: UserDto;
 
   @Expose()
   @Type(() => OrderItemDto)

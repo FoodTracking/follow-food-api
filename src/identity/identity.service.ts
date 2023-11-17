@@ -38,7 +38,7 @@ export class IdentityService {
       const [long, lat] = feature.geometry.coordinates;
       location = {
         type: 'Point',
-        coordinates: [lat, long],
+        coordinates: [long, lat],
       };
     }
 
@@ -95,7 +95,14 @@ export class IdentityService {
       created.avatar = avatar.filename;
     }
 
-    return this.identityRepository.save({ ...entity, ...created });
+    await this.identityRepository.save({ ...entity, ...created });
+    return await this.findOne({
+      relations: {
+        user: true,
+        restaurant: true,
+      },
+      where: { id: id },
+    });
   }
 
   remove(id: string) {

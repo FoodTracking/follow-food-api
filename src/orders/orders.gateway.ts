@@ -5,7 +5,6 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Identity } from '../identity/entities/identity.entity';
-import { Role } from '../auth/enum/user-role.dto';
 import { Order } from './entities/order.entity';
 import { plainToInstance } from 'class-transformer';
 import { OrderOverviewDto } from './dto/order-overview.dto';

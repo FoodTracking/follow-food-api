@@ -26,7 +26,7 @@ import { RestaurantDto } from './dto/restaurant.dto';
 import { RestaurantOrderDto } from './dto/restaurant-order.dto';
 import { RestaurantDetailsDto } from './dto/restaurant-details.dto';
 import { FindOrdersQueryDto } from './dto/find-orders-query.dto';
-import {FindProductsQueryDto} from "./dto/find-products-query.dto";
+import { FindProductsQueryDto } from './dto/find-products-query.dto';
 
 @Controller('restaurants')
 @ApiTags('restaurants')

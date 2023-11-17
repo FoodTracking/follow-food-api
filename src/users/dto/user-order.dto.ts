@@ -3,6 +3,7 @@ import { IsNumber, IsUUID } from 'class-validator';
 import { RestaurantDto } from '../../restaurants/dto/restaurant.dto';
 import { OrderStatusEnum } from '../../orders/entities/order-status.enum';
 import { Order } from '../../orders/entities/order.entity';
+import { OrderItemDto } from '../../orders/dto/order-item.dto';
 
 @Exclude()
 export class UserOrderDto {
@@ -13,6 +14,10 @@ export class UserOrderDto {
   @Expose()
   @Type(() => RestaurantDto)
   restaurant: RestaurantDto;
+
+  @Expose()
+  @Type(() => OrderItemDto)
+  products: OrderItemDto[];
 
   @Expose()
   @IsNumber()

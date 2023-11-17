@@ -50,12 +50,18 @@ export class IdentityController {
 
   @Patch(':id')
   @UseInterceptors(FileInterceptor('avatar'))
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateIdentityDto: UpdateIdentityDto,
     @UploadedFile() avatar: Express.Multer.File,
   ) {
-    return this.identityService.update(id, updateIdentityDto, avatar);
+    const entity = await this.identityService.update(
+      id,
+      updateIdentityDto,
+      avatar,
+    );
+
+    return plainToInstance(ProfileDto, entity);
   }
 
   @Delete(':id')
