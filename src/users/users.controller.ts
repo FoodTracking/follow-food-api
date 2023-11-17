@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Patch,
@@ -20,6 +21,8 @@ import { RolesGuard } from '../auth/guard/roles.guard';
 import { plainToInstance } from 'class-transformer';
 import { UserOrderDto } from './dto/user-order.dto';
 import { FindOrdersQueryDto } from '../restaurants/dto/find-orders-query.dto';
+import { CurrentUser } from '../auth/decorator/current-user.decorator';
+import { Identity } from '../identity/entities/identity.entity';
 
 @Controller('users')
 @ApiTags('users')
@@ -56,13 +59,23 @@ export class UsersController {
 
   @Patch(':id')
   @Roles(Role.ADMIN, Role.USER)
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  update(
+    @CurrentUser() identity: Identity,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    if (identity.id !== id && identity.role !== Role.ADMIN) {
+      throw new ForbiddenException('You are not allowed to update other users');
+    }
     return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   @Roles(Role.ADMIN, Role.USER)
-  remove(@Param('id') id: string) {
+  remove(@CurrentUser() identity: Identity, @Param('id') id: string) {
+    if (identity.id !== id && identity.role !== Role.ADMIN) {
+      throw new ForbiddenException('You are not allowed to delete other users');
+    }
     return this.usersService.remove(id);
   }
 }

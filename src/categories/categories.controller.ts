@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Patch,
@@ -16,6 +17,8 @@ import { RolesGuard } from '../auth/guard/roles.guard';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { Role } from '../auth/enum/user-role.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { CurrentUser } from '../auth/decorator/current-user.decorator';
+import { Identity } from '../identity/entities/identity.entity';
 
 @Controller('categories')
 @ApiTags('categories')
@@ -43,9 +46,16 @@ export class CategoriesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   update(
+    @CurrentUser() identity: Identity,
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
+    if (identity.id !== id && identity.role !== Role.ADMIN) {
+      throw new ForbiddenException(
+        'You are not allowed to update other categories',
+      );
+    }
+
     return this.categoriesService.update(id, updateCategoryDto);
   }
 

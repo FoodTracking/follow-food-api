@@ -138,8 +138,6 @@ export class RestaurantsService {
   }
 
   async update(id: string, dto: UpdateRestaurantDto, user: Identity) {
-    if (id !== dto.id) throw new BadRequestException();
-
     const data = await this.geoService.getGeolocation(dto.address);
     const feature = data.features[0];
     if (feature.geometry.type !== 'Point') {

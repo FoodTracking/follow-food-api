@@ -47,13 +47,7 @@ export class OrdersController {
 
   @Patch(':id/next')
   @Roles(Role.ADMIN, Role.RESTAURANT)
-  update(@Param('id') id: string) {
-    return this.ordersService.next(id);
-  }
-
-  @Delete(':id')
-  @Roles(Role.ADMIN, Role.RESTAURANT)
-  remove(@Param('id') id: string) {
-    return this.ordersService.remove(id);
+  update(@CurrentUser() identity: Identity, @Param('id') id: string) {
+    return this.ordersService.next(id, identity);
   }
 }

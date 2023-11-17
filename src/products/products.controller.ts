@@ -58,11 +58,17 @@ export class ProductsController {
   @Roles(Role.ADMIN, Role.RESTAURANT)
   @UseInterceptors(FileInterceptor('image'))
   update(
+    @CurrentUser() identity: Identity,
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
     @UploadedFile() image?: Express.Multer.File,
   ) {
-    const entity = this.productsService.update(id, updateProductDto, image);
+    const entity = this.productsService.update(
+      id,
+      updateProductDto,
+      identity,
+      image,
+    );
     return plainToInstance(ProductDto, entity);
   }
 

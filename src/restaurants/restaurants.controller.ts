@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Patch,
@@ -88,27 +89,38 @@ export class RestaurantsController {
     updateRestaurantDto: UpdateRestaurantDto,
     @CurrentUser() user: Identity,
   ) {
+    if (user.id !== id && user.role !== Role.ADMIN) {
+      throw new ForbiddenException(
+        'You are not allowed to update other restaurants',
+      );
+    }
     return this.restaurantsService.update(id, updateRestaurantDto, user);
   }
 
-  @Patch(':id/approve')
-  @Roles(Role.ADMIN)
-  @UseGuards(JwtAuthGuard)
-  approve(@Param('id') id: string) {
-    return this.restaurantsService.process(id, true);
-  }
-
-  @Patch(':id/reject')
-  @Roles(Role.ADMIN)
-  @UseGuards(JwtAuthGuard)
-  reject(@Param('id') id: string) {
-    return this.restaurantsService.process(id, false);
-  }
+  // NOTE: This is not implemented yet
+  // @Patch(':id/approve')
+  // @Roles(Role.ADMIN)
+  // @UseGuards(JwtAuthGuard)
+  // approve(@Param('id') id: string) {
+  //   return this.restaurantsService.process(id, true);
+  // }
+  //
+  // @Patch(':id/reject')
+  // @Roles(Role.ADMIN)
+  // @UseGuards(JwtAuthGuard)
+  // reject(@Param('id') id: string) {
+  //   return this.restaurantsService.process(id, false);
+  // }
 
   @Delete(':id')
   @Roles(Role.ADMIN, Role.RESTAURANT)
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string) {
+  remove(@CurrentUser() identity: Identity, @Param('id') id: string) {
+    if (identity.id !== id && identity.role !== Role.ADMIN) {
+      throw new ForbiddenException(
+        'You are not allowed to delete other restaurants',
+      );
+    }
     return this.restaurantsService.remove(id);
   }
 }

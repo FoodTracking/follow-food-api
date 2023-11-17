@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  Delete,
+  Delete, ForbiddenException,
   Get,
   Param,
   Patch,
@@ -51,10 +51,17 @@ export class IdentityController {
   @Patch(':id')
   @UseInterceptors(FileInterceptor('avatar'))
   async update(
+    @CurrentUser() identity: Identity,
     @Param('id') id: string,
     @Body() updateIdentityDto: UpdateIdentityDto,
     @UploadedFile() avatar: Express.Multer.File,
   ) {
+    if (identity.id !== id && identity.role !== Role.ADMIN) {
+      throw new ForbiddenException(
+        'You are not allowed to update other identities',
+      );
+    }
+
     const entity = await this.identityService.update(
       id,
       updateIdentityDto,
