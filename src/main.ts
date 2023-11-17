@@ -21,14 +21,16 @@ async function bootstrap() {
   app.useWebSocketAdapter(new SocketIoAdapter(app));
 
   // Swagger
-  const builder = new DocumentBuilder()
-    .setTitle('Follow-Food API')
-    .addBearerAuth()
-    .setDescription('The official API for Follow-Food')
-    .setVersion('1.0')
-    .build();
-  const document = SwaggerModule.createDocument(app, builder);
-  SwaggerModule.setup('docs', app, document);
+  if (config.get('NODE_ENV') !== 'production') {
+    const builder = new DocumentBuilder()
+      .setTitle('Follow-Food API')
+      .addBearerAuth()
+      .setDescription('The official API for Follow-Food')
+      .setVersion('1.0')
+      .build();
+    const document = SwaggerModule.createDocument(app, builder);
+    SwaggerModule.setup('docs', app, document);
+  }
 
   await app.listen(3000);
 }
